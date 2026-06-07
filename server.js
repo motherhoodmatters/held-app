@@ -7,7 +7,7 @@ const app=express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname,'public')));
 
-const pool=new Pool({connectionString:process.env.DATABASE_URL,ssl:{rejectUnauthorized:false}});
+const pool=new Pool({connectionString:process.env.DATABASE_URL,ssl:process.env.DATABASE_URL?{rejectUnauthorized:false}:false});
 
 async function initDB(){
   await pool.query(`CREATE TABLE IF NOT EXISTS practitioners(

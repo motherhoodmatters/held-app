@@ -2,28 +2,133 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Held">
 <title>Held</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0fdfa;min-height:100vh;}
-#root{min-height:100vh;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0fdfa;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+.card{background:white;border-radius:20px;padding:36px;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(13,148,136,0.12);}
+.logo{display:flex;align-items:center;gap:12px;margin-bottom:32px;}
+.logo-icon{width:44px;height:44px;background:#0d9488;border-radius:12px;display:flex;align-items:center;justify-content:center;}
+.logo-name{font-size:22px;font-weight:700;color:#0f172a;letter-spacing:-0.5px;}
+.logo-tag{font-size:12px;color:#64748b;}
+h1{font-size:22px;font-weight:700;color:#0f172a;margin-bottom:6px;letter-spacing:-0.3px;}
+.sub{font-size:14px;color:#64748b;margin-bottom:28px;}
+.field{margin-bottom:16px;}
+label{display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px;}
+input{width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:15px;color:#0f172a;outline:none;transition:border 0.15s;font-family:inherit;}
+input:focus{border-color:#0d9488;}
+.btn{width:100%;padding:13px;background:#0d9488;color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px;font-family:inherit;transition:background 0.15s;}
+.btn:hover{background:#0f766e;}
+.btn:disabled{background:#94a3b8;cursor:not-allowed;}
+.switch{text-align:center;margin-top:20px;font-size:14px;color:#64748b;}
+.switch a{color:#0d9488;text-decoration:none;font-weight:500;cursor:pointer;}
+.error{background:#fef2f2;color:#dc2626;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none;}
+.success{background:#f0fdf4;color:#16a34a;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none;}
+.divider{display:flex;align-items:center;gap:12px;margin:20px 0;}
+.divider hr{flex:1;border:none;border-top:1px solid #e2e8f0;}
+.divider span{font-size:12px;color:#94a3b8;}
 </style>
 </head>
 <body>
-<div id="root">
-<div style="display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:16px">
-<div style="width:56px;height:56px;background:#0d9488;border-radius:16px;display:flex;align-items:center;justify-content:center">
-<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
-<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-</svg>
+<div class="card">
+  <div class="logo">
+    <div class="logo-icon">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-name">Held</div>
+      <div class="logo-tag">Client follow-up & messaging</div>
+    </div>
+  </div>
+
+  <div id="loginView">
+    <h1>Welcome back</h1>
+    <p class="sub">Sign in to your practice account</p>
+    <div class="error" id="loginError"></div>
+    <div class="field"><label>Email</label><input type="email" id="loginEmail" placeholder="you@practice.com" /></div>
+    <div class="field"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••" /></div>
+    <button class="btn" onclick="doLogin()">Sign in</button>
+    <div class="switch">Don't have an account? <a onclick="showSignup()">Sign up free</a></div>
+  </div>
+
+  <div id="signupView" style="display:none">
+    <h1>Create your account</h1>
+    <p class="sub">Start your 14-day free trial</p>
+    <div class="error" id="signupError"></div>
+    <div class="success" id="signupSuccess"></div>
+    <div class="field"><label>Your name</label><input type="text" id="signupName" placeholder="Jane Brown" /></div>
+    <div class="field"><label>Practice name</label><input type="text" id="signupPractice" placeholder="e.g. Bloom Lactation" /></div>
+    <div class="field"><label>Email</label><input type="email" id="signupEmail" placeholder="you@practice.com" /></div>
+    <div class="field"><label>Password</label><input type="password" id="signupPassword" placeholder="Min 8 characters" /></div>
+    <button class="btn" onclick="doSignup()">Create account</button>
+    <div class="switch">Already have an account? <a onclick="showLogin()">Sign in</a></div>
+  </div>
+
+  <div id="dashView" style="display:none">
+    <h1 id="dashTitle">Welcome!</h1>
+    <p class="sub" id="dashSub">Your Held dashboard is ready.</p>
+    <div style="margin-top:24px;padding:16px;background:#f0fdfa;border-radius:12px;font-size:14px;color:#0f172a;">
+      <p style="font-weight:600;margin-bottom:8px">Next step:</p>
+      <p style="color:#64748b;">Connect your Splose account to start tracking clients.</p>
+    </div>
+    <button class="btn" style="margin-top:20px" onclick="doLogout()">Sign out</button>
+  </div>
 </div>
-<h1 style="font-size:28px;font-weight:700;color:#0f172a;letter-spacing:-0.5px">Held</h1>
-<p style="color:#64748b;font-size:15px">Coming soon</p>
-</div>
-</div>
+
+<script>
+var session=null;
+
+function showSignup(){document.getElementById('loginView').style.display='none';document.getElementById('signupView').style.display='block';}
+function showLogin(){document.getElementById('signupView').style.display='none';document.getElementById('loginView').style.display='block';}
+
+function showError(id,msg){var el=document.getElementById(id);el.textContent=msg;el.style.display='block';}
+function hideError(id){document.getElementById(id).style.display='none';}
+
+async function doLogin(){
+  hideError('loginError');
+  var email=document.getElementById('loginEmail').value.trim();
+  var password=document.getElementById('loginPassword').value;
+  if(!email||!password){showError('loginError','Please fill in all fields');return;}
+  var r=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+  var d=await r.json();
+  if(d.error){showError('loginError',d.error);return;}
+  session=d;
+  showDash();
+}
+
+async function doSignup(){
+  hideError('signupError');
+  var name=document.getElementById('signupName').value.trim();
+  var practice=document.getElementById('signupPractice').value.trim();
+  var email=document.getElementById('signupEmail').value.trim();
+  var password=document.getElementById('signupPassword').value;
+  if(!name||!practice||!email||!password){showError('signupError','Please fill in all fields');return;}
+  if(password.length<8){showError('signupError','Password must be at least 8 characters');return;}
+  var r=await fetch('/api/auth/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,practice,email,password})});
+  var d=await r.json();
+  if(d.error){showError('signupError',d.error);return;}
+  session=d;
+  showDash();
+}
+
+function showDash(){
+  document.getElementById('loginView').style.display='none';
+  document.getElementById('signupView').style.display='none';
+  document.getElementById('dashView').style.display='block';
+  document.getElementById('dashTitle').textContent='Welcome, '+session.name+'!';
+  document.getElementById('dashSub').textContent=session.practice+' · '+session.email;
+}
+
+function doLogout(){
+  session=null;
+  document.getElementById('dashView').style.display='none';
+  document.getElementById('loginView').style.display='block';
+}
+</script>
 </body>
 </html>

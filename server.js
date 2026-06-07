@@ -62,6 +62,35 @@ function makeToken(){return crypto.randomBytes(32).toString('hex');}
 // Health check
 app.get('/api/health',function(req,res){res.json({ok:true,name:'Held'});});
 
+
+// Signup
+app.post('/api/auth/signup',async function(req,res){
+  const{name,practice,email,password}=req.body;
+  if(!name||!practice||!email||!password)return res.status(400).json({error:'All fields required'});
+  if(password.length<8)return res.status(400).json({error:'Password must be at least 8 characters'});
+  try{
+    const exists=await pool.query('SELECT id FROM practitioners WHERE email=$1',[email.toLowerCase()]);
+    if(exists.rows.length)return res.status(400).json({error:'An account with this email already exists'});
+    const id='prac_'+require('crypto').randomBytes(8).toString('hex');
+    const hash=hashPassword(password);
+    await pool.query('INSERT INTO practitioners(id,name,email,password_hash,practice_name) VALUES($1,$2,$3,$4,$5)',[id,name,email.toLowerCase(),hash,practice]);
+    res.json({ok:true,id,name,email:email.toLowerCase(),practice});
+  }catch(err){console.error('Signup error:',err.message);res.status(500).json({error:'Something went wrong. Please try again.'});}
+});
+
+// Login
+app.post('/api/auth/login',async function(req,res){
+  const{email,password}=req.body;
+  if(!email||!password)return res.status(400).json({error:'Please fill in all fields'});
+  try{
+    const r=await pool.query('SELECT id,name,email,password_hash,practice_name FROM practitioners WHERE email=$1',[email.toLowerCase()]);
+    if(!r.rows.length)return res.status(401).json({error:'No account found with this email'});
+    const p=r.rows[0];
+    if(p.password_hash!==hashPassword(password))return res.status(401).json({error:'Incorrect password'});
+    res.json({ok:true,id:p.id,name:p.name,email:p.email,practice:p.practice_name});
+  }catch(err){console.error('Login error:',err.message);res.status(500).json({error:'Something went wrong. Please try again.'});}
+});
+
 app.listen(process.env.PORT||3000,async function(){
   await initDB();
   console.log('Held running on port '+(process.env.PORT||3000));

@@ -268,6 +268,99 @@ function showDash(){
   loadClients();
 }
 
+
+async function showClientDetail(clientId){
+  var client=clients.find(function(c){return c.id===clientId;});
+  if(!client)return;
+  var st=getStatus(client);
+  var left=client.last_appt?bizDaysLeft(client.last_appt,10):null;
+  var statusLabels={active:'Active',checkin:'Check-in needed',discharge:'Discharge',rebook:'Rebook'};
+  var statusColors={active:{bg:'#dcfce7',color:'#166534'},checkin:{bg:'#fef9c3',color:'#854d0e'},discharge:{bg:'#f1f5f9',color:'#475569'},rebook:{bg:'#fef2f2',color:'#991b1b'}};
+  var sc=statusColors[st];
+  var initials=client.name.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+  
+  var html='<div style="padding:28px;">';
+  html+='<div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">';
+  html+='<button onclick="showSection('clients')" style="display:flex;align-items:center;gap:6px;padding:8px 12px;background:none;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;color:#64748b;cursor:pointer;font-family:inherit;">← Back</button>';
+  html+='</div>';
+  
+  html+='<div style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:24px;margin-bottom:16px;">';
+  html+='<div style="display:flex;align-items:flex-start;gap:16px;">';
+  html+='<div style="width:56px;height:56px;border-radius:50%;background:#ccfbf1;color:#0f766e;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500;flex-shrink:0;">'+initials+'</div>';
+  html+='<div style="flex:1;">';
+  html+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">';
+  html+='<h1 style="font-size:20px;font-weight:700;color:#0f172a;">'+client.name+'</h1>';
+  html+='<span style="font-size:12px;font-weight:600;padding:3px 9px;border-radius:5px;background:'+sc.bg+';color:'+sc.color+';">'+statusLabels[st]+'</span>';
+  html+='</div>';
+  if(client.phone)html+='<div style="font-size:14px;color:#64748b;margin-bottom:2px;">📞 '+client.phone+'</div>';
+  if(client.email)html+='<div style="font-size:14px;color:#64748b;margin-bottom:2px;">✉️ '+client.email+'</div>';
+  if(client.last_appt)html+='<div style="font-size:14px;color:#64748b;">Last appt: '+new Date(client.last_appt).toLocaleDateString('en-AU')+(left!==null?' · '+(left>0?left+' days left in window':Math.abs(left)+' days overdue'):'')+'</div>';
+  html+='</div>';
+  html+='<div style="display:flex;gap:8px;flex-shrink:0;">';
+  html+='<button onclick="showMessageThread(''+client.id+'')" style="display:flex;align-items:center;gap:6px;padding:9px 14px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;">💬 Message</button>';
+  html+='</div>';
+  html+='</div></div>';
+  
+  html+='<div style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:24px;margin-bottom:16px;">';
+  html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
+  html+='<h2 style="font-size:16px;font-weight:600;color:#0f172a;">Tasks</h2>';
+  html+='</div>';
+  html+='<div id="taskList_'+client.id+'"><div style="color:#94a3b8;font-size:14px;">Loading tasks...</div></div>';
+  html+='<div style="margin-top:16px;display:flex;gap:8px;">';
+  html+='<input id="newTaskInput_'+client.id+'" type="text" placeholder="Add a task..." style="flex:1;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;" onkeydown="if(event.key==='Enter')doAddTask(''+client.id+'')" />';
+  html+='<button onclick="doAddTask(''+client.id+'')" style="padding:9px 16px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit;">Add</button>';
+  html+='</div></div>';
+  
+  html+='</div>';
+  
+  document.getElementById('sectionClients').innerHTML=html;
+  loadTasks(client.id);
+}
+
+async function loadTasks(clientId){
+  var r=await fetch('/api/tasks?clientId='+clientId);
+  var d=await r.json();
+  renderTasks(clientId, d.tasks||[]);
+}
+
+function renderTasks(clientId, tasks){
+  var el=document.getElementById('taskList_'+clientId);
+  if(!el)return;
+  if(!tasks.length){el.innerHTML='<div style="color:#94a3b8;font-size:14px;">No tasks yet</div>';return;}
+  var html='';
+  tasks.forEach(function(t){
+    html+='<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f8fafc;">';
+    html+='<input type="checkbox" '+(t.done?'checked':'')+'  onchange="doToggleTask(''+clientId+'',''+t.id+'',this.checked)" style="width:16px;height:16px;cursor:pointer;" />';
+    html+='<span style="flex:1;font-size:14px;color:#0f172a;'+(t.done?'text-decoration:line-through;color:#94a3b8;':'')+'">'+t.note+'</span>';
+    html+='<button onclick="doDeleteTask(''+clientId+'',''+t.id+'')" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:16px;padding:0 4px;">×</button>';
+    html+='</div>';
+  });
+  el.innerHTML=html;
+}
+
+async function doAddTask(clientId){
+  var input=document.getElementById('newTaskInput_'+clientId);
+  var note=input.value.trim();
+  if(!note)return;
+  var r=await fetch('/api/tasks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({clientId,note,practitionerId:session.id})});
+  input.value='';
+  loadTasks(clientId);
+}
+
+async function doToggleTask(clientId,taskId,done){
+  await fetch('/api/tasks/'+taskId,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({done})});
+  loadTasks(clientId);
+}
+
+async function doDeleteTask(clientId,taskId){
+  await fetch('/api/tasks/'+taskId,{method:'DELETE'});
+  loadTasks(clientId);
+}
+
+function showMessageThread(clientId){
+  showSection('messages');
+}
+
 function showSection(s){
   ['clients','messages','settings'].forEach(function(sec){
     document.getElementById('section'+sec.charAt(0).toUpperCase()+sec.slice(1)).style.display=sec===s?'block':'none';
@@ -356,7 +449,7 @@ function renderClients(){
       else if(st==='discharge')discharge++;
       var left=c.last_appt?bizDaysLeft(c.last_appt,10):null;
       var sc=statusColors[st];
-      html+='<div style="display:flex;align-items:center;padding:14px 20px;border-bottom:1px solid #f8fafc;gap:14px;">';
+      html+='<div style="display:flex;align-items:center;padding:14px 20px;border-bottom:1px solid #f8fafc;gap:14px;cursor:pointer;" onclick="showClientDetail(\''+c.id+'\')" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'\'">';
       html+='<div style="width:40px;height:40px;border-radius:50%;background:#ccfbf1;color:#0f766e;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0;">'+c.name.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase()+'</div>';
       html+='<div style="flex:1;min-width:0;"><div style="font-weight:500;font-size:14px;color:#0f172a;">'+c.name+'</div>';
       html+='<div style="font-size:12px;color:#64748b;">'+(c.last_appt?'Last appt: '+new Date(c.last_appt).toLocaleDateString('en-AU'):'No appointment recorded')+'</div></div>';

@@ -136,6 +136,49 @@ app.delete('/api/clients/:id',async function(req,res){
   }catch(err){res.status(500).json({error:err.message});}
 });
 
+
+// Get tasks for a client
+app.get('/api/tasks',async function(req,res){
+  const clientId=req.query.clientId;
+  if(!clientId)return res.status(400).json({error:'clientId required'});
+  try{
+    const r=await pool.query('SELECT * FROM tasks WHERE client_id=$1 ORDER BY created_at ASC',[clientId]);
+    res.json({tasks:r.rows});
+  }catch(err){res.status(500).json({error:err.message});}
+});
+
+// Add a task
+app.post('/api/tasks',async function(req,res){
+  const{clientId,note,practitionerId}=req.body;
+  if(!clientId||!note)return res.status(400).json({error:'clientId and note required'});
+  try{
+    const id='task_'+require('crypto').randomBytes(8).toString('hex');
+    await pool.query(
+      'INSERT INTO tasks(id,client_id,practitioner_id,note,done) VALUES($1,$2,$3,$4,$5)',
+      [id,clientId,practitionerId||null,note,false]
+    );
+    res.json({ok:true,id});
+  }catch(err){res.status(500).json({error:err.message});}
+});
+
+// Update a task
+app.put('/api/tasks/:id',async function(req,res){
+  const{done,note}=req.body;
+  try{
+    if(done!==undefined)await pool.query('UPDATE tasks SET done=$1 WHERE id=$2',[done,req.params.id]);
+    if(note!==undefined)await pool.query('UPDATE tasks SET note=$1 WHERE id=$2',[note,req.params.id]);
+    res.json({ok:true});
+  }catch(err){res.status(500).json({error:err.message});}
+});
+
+// Delete a task
+app.delete('/api/tasks/:id',async function(req,res){
+  try{
+    await pool.query('DELETE FROM tasks WHERE id=$1',[req.params.id]);
+    res.json({ok:true});
+  }catch(err){res.status(500).json({error:err.message});}
+});
+
 app.listen(process.env.PORT||3000,async function(){
   await initDB();
   console.log('Held running on port '+(process.env.PORT||3000));

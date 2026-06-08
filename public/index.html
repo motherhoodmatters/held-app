@@ -8,7 +8,7 @@
 <title>Held</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0fdfa;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0fdfa;min-height:100vh;}
 .card{background:white;border-radius:20px;padding:36px;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(13,148,136,0.12);}
 .logo{display:flex;align-items:center;gap:12px;margin-bottom:32px;}
 .logo-icon{width:44px;height:44px;background:#0d9488;border-radius:12px;display:flex;align-items:center;justify-content:center;}
@@ -50,7 +50,7 @@ input:focus{border-color:#0d9488;}
     </div>
   </div>
 
-  <div id="loginView">
+  <div id="authWrap" style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;"><div class="card"><div id="loginView">
     <h1>Welcome back</h1>
     <p class="sub">Sign in to your practice account</p>
     <div class="error" id="loginError"></div>
@@ -73,7 +73,8 @@ input:focus{border-color:#0d9488;}
     <div class="switch">Already have an account? <a onclick="showLogin()">Sign in</a></div>
   </div>
 
-  <div id="dashView" style="display:none">
+</div></div></div>
+  <div id="dashView" style="display:none;min-height:100vh;">
     <div style="display:flex;height:calc(100vh - 69px)">
       <!-- Sidebar -->
       <div style="width:260px;background:#f8fafc;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;padding:20px 0;">
@@ -257,6 +258,7 @@ async function doSignup(){
 var clients=[];
 
 function showDash(){
+  document.getElementById('authWrap').style.display='none';
   document.getElementById('loginView').style.display='none';
   document.getElementById('signupView').style.display='none';
   document.getElementById('dashView').style.display='block';
@@ -375,7 +377,9 @@ function doLogout(){
   session=null;
   clients=[];
   document.getElementById('dashView').style.display='none';
+  document.getElementById('authWrap').style.display='flex';
   document.getElementById('loginView').style.display='block';
+  document.getElementById('signupView').style.display='none';
 }
 </script>
 </body>

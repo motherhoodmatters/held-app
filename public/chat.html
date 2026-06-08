@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Tracks">
+<title>Tracks</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:'DM Sans',sans-serif;background:#f0fdfa;min-height:100vh;display:flex;flex-direction:column;}
+#root{flex:1;display:flex;flex-direction:column;}
+.pin-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+.logo-wrap{display:flex;align-items:center;gap:10px;margin-bottom:32px;}
+.logo-icon{width:48px;height:48px;background:#0d9488;border-radius:14px;display:flex;align-items:center;justify-content:center;}
+.logo-name{font-size:24px;font-weight:600;color:#0f2e2b;letter-spacing:-0.5px;}
+.pin-card{background:white;border-radius:20px;padding:28px;width:100%;max-width:340px;box-shadow:0 4px 24px rgba(13,148,136,0.12);}
+.pin-title{font-size:18px;font-weight:600;color:#0f2e2b;margin-bottom:6px;text-align:center;}
+.pin-sub{font-size:14px;color:#64748b;margin-bottom:24px;text-align:center;}
+.pin-dots{display:flex;justify-content:center;gap:12px;margin-bottom:24px;}
+.pin-dot{width:16px;height:16px;border-radius:50%;border:2px solid #ccfbf1;background:transparent;transition:background 0.15s;}
+.pin-dot.filled{background:#0d9488;border-color:#0d9488;}
+.pin-pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.pin-btn{padding:16px;background:#f0fdfa;border:none;border-radius:12px;font-size:20px;font-weight:500;color:#0f2e2b;cursor:pointer;transition:background 0.1s;font-family:inherit;}
+.pin-btn:active{background:#ccfbf1;}
+.pin-btn.del{font-size:16px;color:#64748b;}
+.pin-error{color:#dc2626;font-size:13px;text-align:center;margin-top:12px;}
+.chat-screen{flex:1;display:flex;flex-direction:column;display:none;}
+.chat-header{background:#0d9488;padding:16px 20px;display:flex;align-items:center;gap:12px;color:white;}
+.chat-header-avatar{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;flex-shrink:0;}
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px;background:#f8fafc;}
+.msg-wrap-client{display:flex;justify-content:flex-end;}
+.msg-wrap-prac{display:flex;justify-content:flex-start;align-items:flex-end;gap:8px;}
+.msg-bubble-client{background:#0d9488;color:white;border-radius:18px 18px 4px 18px;padding:10px 14px;font-size:15px;line-height:1.5;max-width:78%;}
+.msg-bubble-prac{background:white;color:#0f2e2b;border:1px solid #ccfbf1;border-radius:18px 18px 18px 4px;padding:10px 14px;font-size:15px;line-height:1.5;max-width:78%;}
+.prac-avatar{width:30px;height:30px;border-radius:50%;background:#0d9488;display:flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:500;flex-shrink:0;}
+.msg-time{font-size:11px;color:#94a3b8;text-align:center;margin:4px 0;}
+.chat-input{background:white;padding:12px 16px;border-top:1px solid #e2e8f0;display:flex;align-items:center;gap:10px;}
+.chat-input textarea{flex:1;border:1.5px solid #e2e8f0;border-radius:12px;padding:10px 14px;font-size:15px;font-family:inherit;resize:none;outline:none;max-height:100px;line-height:1.4;}
+.chat-input textarea:focus{border-color:#0d9488;}
+.send-btn{background:#0d9488;border:none;border-radius:50%;width:42px;height:42px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.hint{font-size:11px;color:#94a3b8;text-align:center;padding:6px 0;}
+</style>
+</head>
+<body>
+<div id="root">
+  <div class="pin-screen" id="pinScreen">
+    <div class="logo-wrap">
+      <div class="logo-icon">
+        <svg width="28" height="24" viewBox="0 0 36 32" fill="none">
+          <ellipse cx="6" cy="4" rx="1.6" ry="2.4" fill="white" opacity="0.95" transform="rotate(10 6 4)"/>
+          <circle cx="4.2" cy="1.8" r="0.7" fill="white" opacity="0.85"/>
+          <circle cx="5.4" cy="1.3" r="0.7" fill="white" opacity="0.85"/>
+          <circle cx="6.7" cy="1.2" r="0.7" fill="white" opacity="0.85"/>
+          <circle cx="7.8" cy="1.7" r="0.6" fill="white" opacity="0.85"/>
+          <ellipse cx="9" cy="11" rx="1.6" ry="2.4" fill="white" opacity="0.95" transform="rotate(-10 9 11)"/>
+          <circle cx="7.2" cy="8.8" r="0.7" fill="white" opacity="0.85"/>
+          <circle cx="8.4" cy="8.3" r="0.7" fill="white" opacity="0.85"/>
+          <circle cx="9.7" cy="8.2" r="0.7" fill="white" opacity="0.85"/>
+          <circle cx="10.8" cy="8.7" r="0.6" fill="white" opacity="0.85"/>
+          <ellipse cx="22" cy="5" rx="1.1" ry="1.6" fill="white" opacity="0.75" transform="rotate(10 22 5)"/>
+          <circle cx="20.7" cy="3.3" r="0.5" fill="white" opacity="0.65"/>
+          <circle cx="21.6" cy="2.9" r="0.5" fill="white" opacity="0.65"/>
+          <circle cx="22.6" cy="2.8" r="0.5" fill="white" opacity="0.65"/>
+          <circle cx="23.5" cy="3.2" r="0.45" fill="white" opacity="0.65"/>
+          <ellipse cx="25" cy="12" rx="1.1" ry="1.6" fill="white" opacity="0.75" transform="rotate(-10 25 12)"/>
+          <circle cx="23.7" cy="10.3" r="0.5" fill="white" opacity="0.65"/>
+          <circle cx="24.6" cy="9.9" r="0.5" fill="white" opacity="0.65"/>
+          <circle cx="25.6" cy="9.8" r="0.5" fill="white" opacity="0.65"/>
+          <circle cx="26.5" cy="10.2" r="0.45" fill="white" opacity="0.65"/>
+        </svg>
+      </div>
+      <div class="logo-name">Tracks</div>
+    </div>
+    <div class="pin-card">
+      <div class="pin-title" id="pinTitle">Welcome back</div>
+      <div class="pin-sub" id="pinSub">Enter your PIN to access your messages</div>
+      <div class="pin-dots">
+        <div class="pin-dot" id="dot0"></div>
+        <div class="pin-dot" id="dot1"></div>
+        <div class="pin-dot" id="dot2"></div>
+        <div class="pin-dot" id="dot3"></div>
+      </div>
+      <div class="pin-pad">
+        <button class="pin-btn" onclick="pinPress('1')">1</button>
+        <button class="pin-btn" onclick="pinPress('2')">2</button>
+        <button class="pin-btn" onclick="pinPress('3')">3</button>
+        <button class="pin-btn" onclick="pinPress('4')">4</button>
+        <button class="pin-btn" onclick="pinPress('5')">5</button>
+        <button class="pin-btn" onclick="pinPress('6')">6</button>
+        <button class="pin-btn" onclick="pinPress('7')">7</button>
+        <button class="pin-btn" onclick="pinPress('8')">8</button>
+        <button class="pin-btn" onclick="pinPress('9')">9</button>
+        <div></div>
+        <button class="pin-btn" onclick="pinPress('0')">0</button>
+        <button class="pin-btn del" onclick="pinDelete()">⌫</button>
+      </div>
+      <div class="pin-error" id="pinError"></div>
+    </div>
+    <div class="hint" style="margin-top:16px;">🔒 Your messages are private and secure</div>
+  </div>
+
+  <div class="chat-screen" id="chatScreen">
+    <div class="chat-header">
+      <div class="chat-header-avatar" id="pracInitials">--</div>
+      <div>
+        <div style="font-weight:500;font-size:16px;" id="pracName">Your practitioner</div>
+        <div style="font-size:12px;opacity:0.85;">Messages are checked regularly</div>
+      </div>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="hint">Replies usually within one business day</div>
+    <div class="chat-input">
+      <textarea id="msgInput" placeholder="Message..." rows="1" oninput="autoResize(this)"></textarea>
+      <button class="send-btn" onclick="sendMessage()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+var token=location.pathname.split('/chat/')[1];
+var pin='';
+var clientPin='';
+var needsSetup=false;
+var clientId=null;
+
+async function init(){
+  if(!token){document.getElementById('pinSub').textContent='Invalid link. Please contact your practitioner.';return;}
+  var r=await fetch('/api/chat/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:token,pin:'____'})});
+  var d=await r.json();
+  if(d.needsSetup){
+    needsSetup=true;
+    document.getElementById('pinTitle').textContent='Set up your PIN';
+    document.getElementById('pinSub').textContent='Choose a 4-digit PIN to secure your messages';
+  }
+}
+
+function updateDots(){
+  for(var i=0;i<4;i++){
+    document.getElementById('dot'+i).className='pin-dot'+(i<pin.length?' filled':'');
+  }
+}
+
+function pinPress(n){
+  if(pin.length>=4)return;
+  pin+=n;
+  updateDots();
+  if(pin.length===4)submitPin();
+}
+
+function pinDelete(){
+  pin=pin.slice(0,-1);
+  updateDots();
+  document.getElementById('pinError').textContent='';
+}
+
+async function submitPin(){
+  document.getElementById('pinError').textContent='';
+  if(needsSetup){
+    var r=await fetch('/api/chat/setup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:token,pin:pin})});
+    var d=await r.json();
+    if(d.error){document.getElementById('pinError').textContent=d.error;pin='';updateDots();return;}
+    clientPin=pin;
+    clientId=d.clientId;
+    showChat();
+  } else {
+    var r=await fetch('/api/chat/verify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:token,pin:pin})});
+    var d=await r.json();
+    if(d.error){document.getElementById('pinError').textContent=d.error;pin='';updateDots();return;}
+    clientPin=pin;
+    clientId=d.clientId;
+    showChat();
+  }
+}
+
+async function showChat(){
+  document.getElementById('pinScreen').style.display='none';
+  document.getElementById('chatScreen').style.display='flex';
+  document.getElementById('chatScreen').style.flexDirection='column';
+  loadMessages();
+  setInterval(loadMessages,10000);
+}
+
+async function loadMessages(){
+  var r=await fetch('/api/chat/messages/'+token);
+  var d=await r.json();
+  renderMessages(d.messages||[]);
+}
+
+function renderMessages(msgs){
+  var el=document.getElementById('chatMessages');
+  var html='';
+  if(!msgs.length){
+    html='<div style="text-align:center;color:#94a3b8;font-size:14px;margin-top:40px;">No messages yet.<br>Send a message to get started!</div>';
+  } else {
+    msgs.forEach(function(m){
+      var time=new Date(m.created_at).toLocaleString('en-AU',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'});
+      html+='<div style="text-align:center;font-size:11px;color:#94a3b8;margin:2px 0;">'+time+'</div>';
+      if(m.from_type==='client'){
+        html+='<div class="msg-wrap-client"><div class="msg-bubble-client">'+escHtml(m.body)+'</div></div>';
+      } else {
+        html+='<div class="msg-wrap-prac"><div class="prac-avatar" id="pracInitials2">'+document.getElementById('pracInitials').textContent+'</div><div class="msg-bubble-prac">'+escHtml(m.body)+'</div></div>';
+      }
+    });
+  }
+  el.innerHTML=html;
+  el.scrollTop=el.scrollHeight;
+}
+
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+async function sendMessage(){
+  var input=document.getElementById('msgInput');
+  var body=input.value.trim();
+  if(!body)return;
+  input.value='';
+  autoResize(input);
+  var r=await fetch('/api/chat/send',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:token,pin:clientPin,body:body})});
+  var d=await r.json();
+  if(d.ok)loadMessages();
+}
+
+function autoResize(el){
+  el.style.height='auto';
+  el.style.height=Math.min(el.scrollHeight,100)+'px';
+}
+
+document.addEventListener('DOMContentLoaded',init);
+document.getElementById('msgInput').addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}
+});
+</script>
+</body>
+</html>

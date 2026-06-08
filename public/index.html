@@ -448,6 +448,7 @@ function getStatus(client){
 }
 
 function renderClients(){
+  if(!document.getElementById('clientList'))return;
   var active=0,checkin=0,discharge=0;
   var html='';
   if(!clients.length){

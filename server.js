@@ -60,7 +60,7 @@ function hashPin(pin){return crypto.createHash('sha256').update(pin+'heldpin2026
 function makeToken(){return crypto.randomBytes(32).toString('hex');}
 
 // Health check
-app.get('/api/health',function(req,res){res.json({ok:true,name:'Held'});});
+app.get('/api/health',function(req,res){res.json({ok:true,name:'Tracks'});});
 
 
 // Signup

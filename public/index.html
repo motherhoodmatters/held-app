@@ -137,6 +137,7 @@ input:focus{border-color:#0d9488;}
             </div>
           </div>
 
+          <div id="clientListWrap">
           <!-- Client list -->
           <div id="clientList" style="background:white;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden;">
             <div style="padding:40px;text-align:center;color:#94a3b8;">
@@ -144,7 +145,7 @@ input:focus{border-color:#0d9488;}
               <button onclick="showAddClient()" style="padding:9px 18px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit;">Add your first client</button>
             </div>
           </div>
-        </div>
+        </div></div>
 
         <!-- Messages section -->
         <div id="sectionMessages" style="display:none;padding:28px;">
@@ -313,7 +314,15 @@ async function showClientDetail(clientId){
   html+='</div></div>';
   html+='</div>';
   
-  document.getElementById('sectionClients').innerHTML=html;
+  var detailDiv=document.getElementById('clientDetail');
+  if(!detailDiv){
+    detailDiv=document.createElement('div');
+    detailDiv.id='clientDetail';
+    document.getElementById('sectionClients').appendChild(detailDiv);
+  }
+  detailDiv.innerHTML=html;
+  document.getElementById('clientListWrap').style.display='none';
+  detailDiv.style.display='block';
   document.getElementById('newTaskInput_'+cid).addEventListener('keydown',function(e){if(e.key==='Enter')doAddTask(cid);});
   loadTasks(cid);
 }
@@ -379,7 +388,13 @@ function showSection(s){
     var btn=document.getElementById('nav'+sec.charAt(0).toUpperCase()+sec.slice(1));
     if(btn)btn.className='nav-btn'+(sec===s?' active':'');
   });
-  if(s==='clients')loadClients();
+  if(s==='clients'){
+    var detail=document.getElementById('clientDetail');
+    var listWrap=document.getElementById('clientListWrap');
+    if(detail)detail.style.display='none';
+    if(listWrap)listWrap.style.display='block';
+    loadClients();
+  }
 }
 
 function showAddClient(){

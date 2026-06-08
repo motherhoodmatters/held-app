@@ -165,7 +165,7 @@ app.post('/api/tasks',async function(req,res){
       [id,clientId,practitionerId||null,note,false]
     );
     res.json({ok:true,id});
-  }catch(err){res.status(500).json({error:err.message});}
+  }catch(err){console.error('Tasks GET error:',err.message);res.status(500).json({error:err.message});}
 });
 
 // Update a task

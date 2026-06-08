@@ -278,10 +278,11 @@ async function showClientDetail(clientId){
   var statusColors={active:{bg:'#dcfce7',color:'#166534'},checkin:{bg:'#fef9c3',color:'#854d0e'},discharge:{bg:'#f1f5f9',color:'#475569'},rebook:{bg:'#fef2f2',color:'#991b1b'}};
   var sc=statusColors[st];
   var initials=client.name.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+  var cid=client.id;
   
   var html='<div style="padding:28px;">';
   html+='<div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">';
-  html+='<button onclick="showSection('clients')" style="display:flex;align-items:center;gap:6px;padding:8px 12px;background:none;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;color:#64748b;cursor:pointer;font-family:inherit;">← Back</button>';
+  html+='<button onclick="showSection(\'clients\')" style="display:flex;align-items:center;gap:6px;padding:8px 12px;background:none;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;color:#64748b;cursor:pointer;font-family:inherit;">← Back</button>';
   html+='</div>';
   
   html+='<div style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:24px;margin-bottom:16px;">';
@@ -297,7 +298,7 @@ async function showClientDetail(clientId){
   if(client.last_appt)html+='<div style="font-size:14px;color:#64748b;">Last appt: '+new Date(client.last_appt).toLocaleDateString('en-AU')+(left!==null?' · '+(left>0?left+' days left in window':Math.abs(left)+' days overdue'):'')+'</div>';
   html+='</div>';
   html+='<div style="display:flex;gap:8px;flex-shrink:0;">';
-  html+='<button onclick="showMessageThread(''+client.id+'')" style="display:flex;align-items:center;gap:6px;padding:9px 14px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;">💬 Message</button>';
+  html+='<button onclick="showMessageThread(\''+cid+'\')" style="display:flex;align-items:center;gap:6px;padding:9px 14px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;">💬 Message</button>';
   html+='</div>';
   html+='</div></div>';
   
@@ -305,17 +306,18 @@ async function showClientDetail(clientId){
   html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
   html+='<h2 style="font-size:16px;font-weight:600;color:#0f172a;">Tasks</h2>';
   html+='</div>';
-  html+='<div id="taskList_'+client.id+'"><div style="color:#94a3b8;font-size:14px;">Loading tasks...</div></div>';
+  html+='<div id="taskList_'+cid+'"><div style="color:#94a3b8;font-size:14px;">Loading tasks...</div></div>';
   html+='<div style="margin-top:16px;display:flex;gap:8px;">';
-  html+='<input id="newTaskInput_'+client.id+'" type="text" placeholder="Add a task..." style="flex:1;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;" onkeydown="if(event.key==='Enter')doAddTask(''+client.id+'')" />';
-  html+='<button onclick="doAddTask(''+client.id+'')" style="padding:9px 16px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit;">Add</button>';
+  html+='<input id="newTaskInput_'+cid+'" type="text" placeholder="Add a task..." style="flex:1;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;" />';
+  html+='<button onclick="doAddTask(\''+cid+'\')" style="padding:9px 16px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit;">Add</button>';
   html+='</div></div>';
-  
   html+='</div>';
   
   document.getElementById('sectionClients').innerHTML=html;
-  loadTasks(client.id);
+  document.getElementById('newTaskInput_'+cid).addEventListener('keydown',function(e){if(e.key==='Enter')doAddTask(cid);});
+  loadTasks(cid);
 }
+
 
 async function loadTasks(clientId){
   var r=await fetch('/api/tasks?clientId='+clientId);
@@ -329,14 +331,22 @@ function renderTasks(clientId, tasks){
   if(!tasks.length){el.innerHTML='<div style="color:#94a3b8;font-size:14px;">No tasks yet</div>';return;}
   var html='';
   tasks.forEach(function(t){
+    var chk=t.done?'checked':'';
     html+='<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f8fafc;">';
-    html+='<input type="checkbox" '+(t.done?'checked':'')+'  onchange="doToggleTask(''+clientId+'',''+t.id+'',this.checked)" style="width:16px;height:16px;cursor:pointer;" />';
-    html+='<span style="flex:1;font-size:14px;color:#0f172a;'+(t.done?'text-decoration:line-through;color:#94a3b8;':'')+'">'+t.note+'</span>';
-    html+='<button onclick="doDeleteTask(''+clientId+'',''+t.id+'')" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:16px;padding:0 4px;">×</button>';
+    html+='<input type="checkbox" '+chk+' data-cid="'+clientId+'" data-tid="'+t.id+'" class="task-check" style="width:16px;height:16px;cursor:pointer;" />';
+    html+='<span style="flex:1;font-size:14px;'+(t.done?'text-decoration:line-through;color:#94a3b8;':'color:#0f172a;')+'">'+t.note+'</span>';
+    html+='<button data-cid="'+clientId+'" data-tid="'+t.id+'" class="task-del" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;padding:0 4px;line-height:1;">×</button>';
     html+='</div>';
   });
   el.innerHTML=html;
+  el.querySelectorAll('.task-check').forEach(function(cb){
+    cb.addEventListener('change',function(){doToggleTask(this.dataset.cid,this.dataset.tid,this.checked);});
+  });
+  el.querySelectorAll('.task-del').forEach(function(btn){
+    btn.addEventListener('click',function(){doDeleteTask(this.dataset.cid,this.dataset.tid);});
+  });
 }
+
 
 async function doAddTask(clientId){
   var input=document.getElementById('newTaskInput_'+clientId);

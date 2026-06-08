@@ -350,11 +350,13 @@ function renderTasks(clientId, tasks){
 
 async function doAddTask(clientId){
   var input=document.getElementById('newTaskInput_'+clientId);
+  if(!input)return;
   var note=input.value.trim();
   if(!note)return;
-  var r=await fetch('/api/tasks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({clientId,note,practitionerId:session.id})});
   input.value='';
-  loadTasks(clientId);
+  var r=await fetch('/api/tasks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({clientId:clientId,note:note,practitionerId:session.id})});
+  var d=await r.json();
+  if(d.ok)loadTasks(clientId);
 }
 
 async function doToggleTask(clientId,taskId,done){
@@ -377,6 +379,7 @@ function showSection(s){
     var btn=document.getElementById('nav'+sec.charAt(0).toUpperCase()+sec.slice(1));
     if(btn)btn.className='nav-btn'+(sec===s?' active':'');
   });
+  if(s==='clients')loadClients();
 }
 
 function showAddClient(){

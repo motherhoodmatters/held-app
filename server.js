@@ -49,12 +49,16 @@ async function initDB(){
     created_at TIMESTAMPTZ DEFAULT NOW()
   )`);
   await pool.query(`CREATE TABLE IF NOT EXISTS tasks(
-    id SERIAL PRIMARY KEY,
+    id TEXT PRIMARY KEY,
     client_id TEXT,
     practitioner_id TEXT,
-    data TEXT,
-    updated_at TIMESTAMPTZ DEFAULT NOW()
+    note TEXT,
+    done BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
   )`);
+  await pool.query(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS note TEXT`).catch(()=>{});
+  await pool.query(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS done BOOLEAN DEFAULT FALSE`).catch(()=>{});
+  await pool.query(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW()`).catch(()=>{});
   console.log('DB ready');
 }
 

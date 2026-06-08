@@ -148,9 +148,22 @@ input:focus{border-color:#0d9488;}
         </div></div>
 
         <!-- Messages section -->
-        <div id="sectionMessages" style="display:none;padding:28px;">
-          <h1 style="font-size:22px;font-weight:700;color:#0f172a;letter-spacing:-0.3px;margin-bottom:8px;">Messages</h1>
-          <p style="font-size:14px;color:#64748b;">Coming soon — secure messaging with your clients.</p>
+        <div id="sectionMessages" style="display:none;height:calc(100vh - 73px);display:none;">
+          <div style="display:flex;height:100%;">
+            <!-- Conversation list -->
+            <div style="width:300px;background:white;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;flex-shrink:0;">
+              <div style="padding:20px 16px;border-bottom:1px solid #f1f5f9;">
+                <h2 style="font-size:16px;font-weight:600;color:#0f172a;">Messages</h2>
+              </div>
+              <div id="conversationList" style="overflow-y:auto;flex:1;">
+                <div style="padding:40px 16px;text-align:center;color:#94a3b8;font-size:14px;">No conversations yet.<br>Send a client their chat link to get started.</div>
+              </div>
+            </div>
+            <!-- Thread -->
+            <div id="threadArea" style="flex:1;display:flex;flex-direction:column;background:#f8fafc;">
+              <div style="flex:1;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:14px;">Select a conversation</div>
+            </div>
+          </div>
         </div>
 
         <!-- Settings section -->
@@ -378,8 +391,110 @@ async function doDeleteTask(clientId,taskId){
   loadTasks(clientId);
 }
 
-function showMessageThread(clientId){
+async function showMessageThread(clientId){
   showSection('messages');
+  // Get or create chat link
+  var r=await fetch('/api/chat-link/'+clientId);
+  var d=await r.json();
+  loadThread(clientId,d.url);
+  loadConversations();
+}
+
+async function loadConversations(){
+  fetch('/api/chat/conversations/'+session.id).then(function(r){return r.json();}).then(function(d){
+    var convs=d.conversations||[];
+    var el=document.getElementById('conversationList');
+    if(!convs.length){
+      el.innerHTML='<div style="padding:40px 16px;text-align:center;color:#94a3b8;font-size:14px;">No conversations yet.<br>Send a client their chat link to get started.</div>';
+      return;
+    }
+    var html='';
+    convs.forEach(function(c){
+      var initials=c.client_name.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+      html+='<div class="conv-row" data-cid="'+c.client_id+'" style="padding:14px 16px;cursor:pointer;border-bottom:1px solid #f0fdfa;display:flex;align-items:center;gap:10px;">';
+      html+='<div style="width:40px;height:40px;border-radius:50%;background:#ccfbf1;color:#0f766e;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0;">'+initials+'</div>';
+      html+='<div style="flex:1;min-width:0;">';
+      html+='<div style="font-weight:'+(c.unread>0?'600':'400')+';font-size:14px;color:#0f172a;">'+c.client_name+'</div>';
+      html+='<div style="font-size:12px;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(c.last_message||'No messages yet')+'</div>';
+      html+='</div>';
+      if(c.unread>0)html+='<div style="width:18px;height:18px;background:#0d9488;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:white;font-weight:700;">'+c.unread+'</div>';
+      html+='</div>';
+    });
+    el.innerHTML=html;
+    el.querySelectorAll('.conv-row').forEach(function(row){
+      row.addEventListener('mouseover',function(){this.style.background='#f8fafc';});
+      row.addEventListener('mouseout',function(){this.style.background='';});
+      row.addEventListener('click',function(){loadThread(this.dataset.cid,null);});
+    });
+  });
+}
+
+
+var currentClientId=null;
+var currentChatUrl=null;
+
+async function loadThread(clientId,chatUrl){
+  currentClientId=clientId;
+  currentChatUrl=chatUrl;
+  var client=clients.find(function(c){return c.id===clientId;});
+  var name=client?client.name:'Client';
+  var initials=name.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
+  
+  if(!chatUrl){
+    var r=await fetch('/api/chat-link/'+clientId);
+    var d=await r.json();
+    currentChatUrl=d.url;
+  }
+  
+  var msgs=await fetch('/api/chat/thread/'+clientId).then(function(r){return r.json();});
+  var messages=msgs.messages||[];
+  
+  var html='<div style="background:white;padding:14px 20px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;">';
+  html+='<div style="display:flex;align-items:center;gap:12px;">';
+  html+='<div style="width:40px;height:40px;border-radius:50%;background:#ccfbf1;color:#0f766e;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;">'+initials+'</div>';
+  html+='<div style="font-weight:500;font-size:15px;color:#0f172a;">'+name+'</div></div>';
+  html+='<button onclick="copyChatLink()" style="display:flex;align-items:center;gap:6px;padding:7px 12px;background:#f0fdfa;color:#0d9488;border:1px solid #ccfbf1;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;">📋 Copy chat link</button>';
+  html+='</div>';
+  html+='<div id="threadMessages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:6px;background:#f8fafc;">';
+  if(!messages.length){
+    html+='<div style="text-align:center;color:#94a3b8;font-size:14px;margin-top:40px;">No messages yet. Share the chat link with '+name+' to get started.</div>';
+  } else {
+    messages.forEach(function(m){
+      var time=new Date(m.created_at).toLocaleString('en-AU',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'});
+      html+='<div style="text-align:center;font-size:11px;color:#94a3b8;margin:2px 0;">'+time+'</div>';
+      if(m.from_type==='client'){
+        html+='<div style="display:flex;justify-content:flex-start;"><div style="background:white;color:#0f172a;border:1px solid #ccfbf1;border-radius:18px 18px 18px 4px;padding:10px 14px;font-size:14px;max-width:68%;">'+m.body+'</div></div>';
+      } else {
+        html+='<div style="display:flex;justify-content:flex-end;"><div style="background:#0d9488;color:white;border-radius:18px 18px 4px 18px;padding:10px 14px;font-size:14px;max-width:68%;">'+m.body+'</div></div>';
+      }
+    });
+  }
+  html+='</div>';
+  html+='<div style="background:white;padding:12px 16px;border-top:1px solid #e2e8f0;display:flex;gap:10px;">';
+  html+='<input id="replyInput" type="text" placeholder="Message '+name+'..." style="flex:1;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;font-family:inherit;" onkeydown="if(event.key===\'Enter\')sendReply()" />';
+  html+='<button onclick="sendReply()" style="padding:10px 16px;background:#0d9488;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit;">Send</button>';
+  html+='</div>';
+  
+  document.getElementById('threadArea').innerHTML=html;
+  var threadMsgs=document.getElementById('threadMessages');
+  if(threadMsgs)threadMsgs.scrollTop=threadMsgs.scrollHeight;
+}
+
+function copyChatLink(){
+  if(currentChatUrl){
+    navigator.clipboard.writeText(currentChatUrl).then(function(){
+      alert('Chat link copied! Share with your client: '+currentChatUrl);
+    });
+  }
+}
+
+async function sendReply(){
+  var input=document.getElementById('replyInput');
+  var body=input.value.trim();
+  if(!body||!currentClientId)return;
+  input.value='';
+  await fetch('/api/chat/reply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({clientId:currentClientId,body:body})});
+  loadThread(currentClientId,currentChatUrl);
 }
 
 function showSection(s){

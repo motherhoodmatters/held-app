@@ -91,6 +91,51 @@ app.post('/api/auth/login',async function(req,res){
   }catch(err){console.error('Login error:',err.message);res.status(500).json({error:'Something went wrong. Please try again.'});}
 });
 
+
+// Get clients for a practitioner
+app.get('/api/clients',async function(req,res){
+  const practitionerId=req.query.practitionerId;
+  if(!practitionerId)return res.status(400).json({error:'practitionerId required'});
+  try{
+    const r=await pool.query('SELECT * FROM clients WHERE practitioner_id=$1 ORDER BY created_at DESC',[practitionerId]);
+    res.json({clients:r.rows});
+  }catch(err){res.status(500).json({error:err.message});}
+});
+
+// Add a client manually
+app.post('/api/clients',async function(req,res){
+  const{practitionerId,name,phone,email,lastAppt}=req.body;
+  if(!practitionerId||!name)return res.status(400).json({error:'practitionerId and name required'});
+  try{
+    const id='client_'+require('crypto').randomBytes(8).toString('hex');
+    await pool.query(
+      'INSERT INTO clients(id,practitioner_id,name,phone,email,last_appt) VALUES($1,$2,$3,$4,$5,$6)',
+      [id,practitionerId,name,phone||null,email||null,lastAppt||null]
+    );
+    res.json({ok:true,id});
+  }catch(err){res.status(500).json({error:err.message});}
+});
+
+// Update a client
+app.put('/api/clients/:id',async function(req,res){
+  const{name,phone,email,lastAppt,status}=req.body;
+  try{
+    await pool.query(
+      'UPDATE clients SET name=$1,phone=$2,email=$3,last_appt=$4,status=$5 WHERE id=$6',
+      [name,phone||null,email||null,lastAppt||null,status||'active',req.params.id]
+    );
+    res.json({ok:true});
+  }catch(err){res.status(500).json({error:err.message});}
+});
+
+// Delete a client
+app.delete('/api/clients/:id',async function(req,res){
+  try{
+    await pool.query('DELETE FROM clients WHERE id=$1',[req.params.id]);
+    res.json({ok:true});
+  }catch(err){res.status(500).json({error:err.message});}
+});
+
 app.listen(process.env.PORT||3000,async function(){
   await initDB();
   console.log('Held running on port '+(process.env.PORT||3000));

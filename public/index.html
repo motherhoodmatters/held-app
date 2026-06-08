@@ -30,6 +30,10 @@ input:focus{border-color:#0d9488;}
 .divider{display:flex;align-items:center;gap:12px;margin:20px 0;}
 .divider hr{flex:1;border:none;border-top:1px solid #e2e8f0;}
 .divider span{font-size:12px;color:#94a3b8;}
+
+.nav-btn{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:none;border:none;border-radius:8px;font-size:14px;color:#64748b;cursor:pointer;font-family:inherit;text-align:left;transition:all 0.15s;}
+.nav-btn:hover{background:#f0fdfa;color:#0d9488;}
+.nav-btn.active{background:#f0fdfa;color:#0d9488;font-weight:500;}
 </style>
 </head>
 <body>
@@ -70,13 +74,147 @@ input:focus{border-color:#0d9488;}
   </div>
 
   <div id="dashView" style="display:none">
-    <h1 id="dashTitle">Welcome!</h1>
-    <p class="sub" id="dashSub">Your Held dashboard is ready.</p>
-    <div style="margin-top:24px;padding:16px;background:#f0fdfa;border-radius:12px;font-size:14px;color:#0f172a;">
-      <p style="font-weight:600;margin-bottom:8px">Next step:</p>
-      <p style="color:#64748b;">Connect your Splose account to start tracking clients.</p>
+    <div style="display:flex;height:calc(100vh - 69px)">
+      <!-- Sidebar -->
+      <div style="width:260px;background:#f8fafc;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;padding:20px 0;">
+        <div style="padding:0 16px 20px;border-bottom:1px solid #e2e8f0;">
+          <div style="font-size:13px;font-weight:600;color:#0f172a;" id="sidebarName"></div>
+          <div style="font-size:12px;color:#64748b;" id="sidebarPractice"></div>
+        </div>
+        <nav style="padding:12px 8px;flex:1;">
+          <button onclick="showSection('clients')" class="nav-btn active" id="navClients">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Clients
+          </button>
+          <button onclick="showSection('messages')" class="nav-btn" id="navMessages">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Messages
+          </button>
+          <button onclick="showSection('settings')" class="nav-btn" id="navSettings">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Settings
+          </button>
+        </nav>
+        <div style="padding:16px;">
+          <button onclick="doLogout()" style="width:100%;padding:9px;background:none;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;color:#64748b;cursor:pointer;font-family:inherit;">Sign out</button>
+        </div>
+      </div>
+
+      <!-- Main content -->
+      <div style="flex:1;overflow-y:auto;">
+        <!-- Clients section -->
+        <div id="sectionClients" style="padding:28px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+            <div>
+              <h1 style="font-size:22px;font-weight:700;color:#0f172a;letter-spacing:-0.3px;">Clients</h1>
+              <p style="font-size:14px;color:#64748b;margin-top:2px;" id="clientCount">Loading...</p>
+            </div>
+            <button onclick="showAddClient()" style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:#0d9488;color:white;border:none;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Add client
+            </button>
+          </div>
+
+          <!-- Stats -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;">
+            <div style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:16px;">
+              <div style="font-size:12px;color:#64748b;margin-bottom:4px;">Active</div>
+              <div style="font-size:24px;font-weight:700;color:#0d9488;" id="statActive">0</div>
+            </div>
+            <div style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:16px;">
+              <div style="font-size:12px;color:#64748b;margin-bottom:4px;">Check-in needed</div>
+              <div style="font-size:24px;font-weight:700;color:#f59e0b;" id="statCheckin">0</div>
+            </div>
+            <div style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:16px;">
+              <div style="font-size:12px;color:#64748b;margin-bottom:4px;">Discharge</div>
+              <div style="font-size:24px;font-weight:700;color:#94a3b8;" id="statDischarge">0</div>
+            </div>
+            <div style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:16px;">
+              <div style="font-size:12px;color:#64748b;margin-bottom:4px;">Total</div>
+              <div style="font-size:24px;font-weight:700;color:#0f172a;" id="statTotal">0</div>
+            </div>
+          </div>
+
+          <!-- Client list -->
+          <div id="clientList" style="background:white;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden;">
+            <div style="padding:40px;text-align:center;color:#94a3b8;">
+              <p style="margin-bottom:12px;font-size:15px;">No clients yet</p>
+              <button onclick="showAddClient()" style="padding:9px 18px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit;">Add your first client</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Messages section -->
+        <div id="sectionMessages" style="display:none;padding:28px;">
+          <h1 style="font-size:22px;font-weight:700;color:#0f172a;letter-spacing:-0.3px;margin-bottom:8px;">Messages</h1>
+          <p style="font-size:14px;color:#64748b;">Coming soon — secure messaging with your clients.</p>
+        </div>
+
+        <!-- Settings section -->
+        <div id="sectionSettings" style="display:none;padding:28px;">
+          <h1 style="font-size:22px;font-weight:700;color:#0f172a;letter-spacing:-0.3px;margin-bottom:24px;">Settings</h1>
+          <div style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:24px;max-width:500px;">
+            <h2 style="font-size:16px;font-weight:600;color:#0f172a;margin-bottom:16px;">Practice details</h2>
+            <div style="margin-bottom:16px;">
+              <label style="display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px;">Your name</label>
+              <input id="settingName" type="text" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;" />
+            </div>
+            <div style="margin-bottom:16px;">
+              <label style="display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px;">Practice name</label>
+              <input id="settingPractice" type="text" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;" />
+            </div>
+            <div style="margin-bottom:20px;">
+              <label style="display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px;">Follow-up window (days)</label>
+              <input id="settingDays" type="number" value="10" min="1" max="90" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;" />
+              <p style="font-size:12px;color:#94a3b8;margin-top:4px;">How many business days after an appointment before follow-up is needed</p>
+            </div>
+            <div style="margin-bottom:20px;">
+              <h3 style="font-size:14px;font-weight:600;color:#0f172a;margin-bottom:12px;">Connect your practice software</h3>
+              <div style="display:flex;flex-direction:column;gap:8px;">
+                <div style="padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:8px;display:flex;align-items:center;justify-content:space-between;">
+                  <span style="font-size:14px;color:#0f172a;">Splose</span>
+                  <button style="padding:6px 12px;background:#f0fdfa;color:#0d9488;border:1px solid #ccfbf1;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;">Connect</button>
+                </div>
+                <div style="padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:8px;display:flex;align-items:center;justify-content:space-between;">
+                  <span style="font-size:14px;color:#0f172a;">Cliniko</span>
+                  <button style="padding:6px 12px;background:#f0fdfa;color:#0d9488;border:1px solid #ccfbf1;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;">Connect</button>
+                </div>
+              </div>
+            </div>
+            <button style="padding:10px 20px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;">Save changes</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <button class="btn" style="margin-top:20px" onclick="doLogout()">Sign out</button>
+
+    <!-- Add client modal -->
+    <div id="addClientModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;display:none;align-items:center;justify-content:center;">
+      <div style="background:white;border-radius:16px;padding:28px;width:100%;max-width:420px;margin:20px;">
+        <h2 style="font-size:18px;font-weight:700;color:#0f172a;margin-bottom:6px;">Add client</h2>
+        <p style="font-size:14px;color:#64748b;margin-bottom:20px;">Add a client to start tracking their follow-up</p>
+        <div id="addClientError" style="display:none;background:#fef2f2;color:#dc2626;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;"></div>
+        <div style="margin-bottom:14px;">
+          <label style="display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px;">Full name *</label>
+          <input id="newClientName" type="text" placeholder="Jane Smith" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;" />
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px;">Phone</label>
+          <input id="newClientPhone" type="tel" placeholder="0400 000 000" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;" />
+        </div>
+        <div style="margin-bottom:14px;">
+          <label style="display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px;">Email</label>
+          <input id="newClientEmail" type="email" placeholder="jane@email.com" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;" />
+        </div>
+        <div style="margin-bottom:20px;">
+          <label style="display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px;">Last appointment date</label>
+          <input id="newClientDate" type="date" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;" />
+        </div>
+        <div style="display:flex;gap:10px;">
+          <button onclick="hideAddClient()" style="flex:1;padding:11px;background:none;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit;">Cancel</button>
+          <button onclick="doAddClient()" style="flex:1;padding:11px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;">Add client</button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -116,16 +254,126 @@ async function doSignup(){
   showDash();
 }
 
+var clients=[];
+
 function showDash(){
   document.getElementById('loginView').style.display='none';
   document.getElementById('signupView').style.display='none';
   document.getElementById('dashView').style.display='block';
-  document.getElementById('dashTitle').textContent='Welcome, '+session.name+'!';
-  document.getElementById('dashSub').textContent=session.practice+' · '+session.email;
+  document.getElementById('sidebarName').textContent=session.name;
+  document.getElementById('sidebarPractice').textContent=session.practice;
+  loadClients();
+}
+
+function showSection(s){
+  ['clients','messages','settings'].forEach(function(sec){
+    document.getElementById('section'+sec.charAt(0).toUpperCase()+sec.slice(1)).style.display=sec===s?'block':'none';
+    var btn=document.getElementById('nav'+sec.charAt(0).toUpperCase()+sec.slice(1));
+    if(btn)btn.className='nav-btn'+(sec===s?' active':'');
+  });
+}
+
+function showAddClient(){
+  document.getElementById('addClientModal').style.display='flex';
+  document.getElementById('newClientName').value='';
+  document.getElementById('newClientPhone').value='';
+  document.getElementById('newClientEmail').value='';
+  document.getElementById('newClientDate').value='';
+  document.getElementById('addClientError').style.display='none';
+}
+
+function hideAddClient(){
+  document.getElementById('addClientModal').style.display='none';
+}
+
+async function doAddClient(){
+  var name=document.getElementById('newClientName').value.trim();
+  var phone=document.getElementById('newClientPhone').value.trim();
+  var email=document.getElementById('newClientEmail').value.trim();
+  var lastAppt=document.getElementById('newClientDate').value;
+  if(!name){
+    var el=document.getElementById('addClientError');
+    el.textContent='Please enter a client name';
+    el.style.display='block';
+    return;
+  }
+  var r=await fetch('/api/clients',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({practitionerId:session.id,name,phone,email,lastAppt})});
+  var d=await r.json();
+  if(d.error){
+    var el=document.getElementById('addClientError');
+    el.textContent=d.error;
+    el.style.display='block';
+    return;
+  }
+  hideAddClient();
+  loadClients();
+}
+
+async function loadClients(){
+  var r=await fetch('/api/clients?practitionerId='+session.id);
+  var d=await r.json();
+  clients=d.clients||[];
+  renderClients();
+}
+
+function bizDaysLeft(lastAppt,days){
+  if(!lastAppt)return null;
+  var d=new Date(lastAppt);
+  var count=0;
+  while(count<days){
+    d.setDate(d.getDate()+1);
+    if(d.getDay()!==0&&d.getDay()!==6)count++;
+  }
+  var now=new Date();
+  now.setHours(0,0,0,0);
+  var diff=Math.round((d-now)/(1000*60*60*24));
+  return diff;
+}
+
+function getStatus(client){
+  if(!client.last_appt)return'rebook';
+  var left=bizDaysLeft(client.last_appt,10);
+  if(left<0)return'discharge';
+  if(left<=3)return'checkin';
+  return'active';
+}
+
+function renderClients(){
+  var active=0,checkin=0,discharge=0;
+  var html='';
+  if(!clients.length){
+    html='<div style="padding:40px;text-align:center;color:#94a3b8;"><p style="margin-bottom:12px;font-size:15px;">No clients yet</p><button onclick="showAddClient()" style="padding:9px 18px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit;">Add your first client</button></div>';
+  } else {
+    var statusLabels={active:'Active',checkin:'Check-in needed',discharge:'Discharge',rebook:'Rebook'};
+    var statusColors={active:{bg:'#dcfce7',color:'#166534'},checkin:{bg:'#fef9c3',color:'#854d0e'},discharge:{bg:'#f1f5f9',color:'#475569'},rebook:{bg:'#fef2f2',color:'#991b1b'}};
+    clients.forEach(function(c){
+      var st=getStatus(c);
+      if(st==='active')active++;
+      else if(st==='checkin')checkin++;
+      else if(st==='discharge')discharge++;
+      var left=c.last_appt?bizDaysLeft(c.last_appt,10):null;
+      var sc=statusColors[st];
+      html+='<div style="display:flex;align-items:center;padding:14px 20px;border-bottom:1px solid #f8fafc;gap:14px;">';
+      html+='<div style="width:40px;height:40px;border-radius:50%;background:#ccfbf1;color:#0f766e;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0;">'+c.name.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase()+'</div>';
+      html+='<div style="flex:1;min-width:0;"><div style="font-weight:500;font-size:14px;color:#0f172a;">'+c.name+'</div>';
+      html+='<div style="font-size:12px;color:#64748b;">'+(c.last_appt?'Last appt: '+new Date(c.last_appt).toLocaleDateString('en-AU'):'No appointment recorded')+'</div></div>';
+      html+='<div style="display:flex;align-items:center;gap:10px;">';
+      if(left!==null)html+='<span style="font-size:12px;color:#64748b;">'+(left>0?left+' days left':Math.abs(left)+' days overdue')+'</span>';
+      html+='<span style="font-size:11px;font-weight:600;padding:3px 8px;border-radius:5px;background:'+sc.bg+';color:'+sc.color+';">'+statusLabels[st]+'</span>';
+      html+='</div></div>';
+    });
+  }
+  document.getElementById('clientList').innerHTML=html;
+  document.getElementById('statActive').textContent=active;
+  document.getElementById('statCheckin').textContent=checkin;
+  document.getElementById('statDischarge').textContent=discharge;
+  document.getElementById('statTotal').textContent=clients.length;
+  document.getElementById('clientCount').textContent=clients.length+' client'+(clients.length!==1?'s':'');
 }
 
 function doLogout(){
   session=null;
+  clients=[];
   document.getElementById('dashView').style.display='none';
   document.getElementById('loginView').style.display='block';
 }

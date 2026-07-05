@@ -4,13 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Tracks">
-<title>Tracks — Client follow-up & messaging</title>
+<meta name="apple-mobile-web-app-title" content="Eily">
+<title>Eily — Client follow-up & messaging</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0fdfa;min-height:100vh;}
-.card{background:white;border-radius:20px;padding:36px;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(13,148,136,0.12);} #authWrap{position:fixed;inset:0;z-index:50;background:#f0fdfa;display:flex;align-items:center;justify-content:center;padding:20px;}
+.card{background:white;border-radius:20px;padding:36px;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(13,148,136,0.12);}
+#authWrap{position:fixed;inset:0;z-index:50;background:#f0fdfa;display:flex;align-items:center;justify-content:center;padding:20px;}
 .logo{display:flex;align-items:center;gap:12px;margin-bottom:32px;}
 .logo-icon{width:44px;height:44px;background:#0d9488;border-radius:12px;display:flex;align-items:center;justify-content:center;}
 .logo-name{font-family:'Playfair Display',serif;font-size:22px;font-weight:600;color:#0f172a;letter-spacing:-0.5px;}
@@ -28,10 +29,6 @@ input:focus{border-color:#0d9488;}
 .switch a{color:#0d9488;text-decoration:none;font-weight:500;cursor:pointer;}
 .error{background:#fef2f2;color:#dc2626;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none;}
 .success{background:#f0fdf4;color:#16a34a;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none;}
-.divider{display:flex;align-items:center;gap:12px;margin:20px 0;}
-.divider hr{flex:1;border:none;border-top:1px solid #e2e8f0;}
-.divider span{font-size:12px;color:#94a3b8;}
-
 .nav-btn{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:none;border:none;border-radius:8px;font-size:14px;color:#64748b;cursor:pointer;font-family:inherit;text-align:left;transition:all 0.15s;}
 .nav-btn:hover{background:#f0fdfa;color:#0d9488;}
 .nav-btn.active{background:#f0fdfa;color:#0d9488;font-weight:500;}
@@ -46,7 +43,7 @@ input:focus{border-color:#0d9488;}
       </svg>
     </div>
     <div>
-      <div class="logo-name">Tracks</div>
+      <div class="logo-name">Eily</div>
       <div class="logo-tag">Client follow-up & messaging</div>
     </div>
   </div>
@@ -60,7 +57,6 @@ input:focus{border-color:#0d9488;}
     <button class="btn" onclick="doLogin()">Sign in</button>
     <div class="switch">Don't have an account? <a onclick="showSignup()">Sign up free</a></div>
   </div>
-
   <div id="signupView" style="display:none">
     <h1>Create your account</h1>
     <p class="sub">Start your 14-day free trial</p>
@@ -73,13 +69,13 @@ input:focus{border-color:#0d9488;}
     <button class="btn" onclick="doSignup()">Create account</button>
     <div class="switch">Already have an account? <a onclick="showLogin()">Sign in</a></div>
   </div>
-
 </div></div></div>
+
   <div id="dashView" style="display:none;min-height:100vh;">
     <div style="display:flex;height:calc(100vh - 69px)">
-      <!-- Sidebar -->
       <div style="width:260px;background:#f8fafc;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;padding:20px 0;">
         <div style="padding:0 16px 20px;border-bottom:1px solid #e2e8f0;">
+          <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:#0d9488;margin-bottom:4px;">Eily</div>
           <div style="font-size:13px;font-weight:600;color:#0f172a;" id="sidebarName"></div>
           <div style="font-size:12px;color:#64748b;" id="sidebarPractice"></div>
         </div>
@@ -102,9 +98,7 @@ input:focus{border-color:#0d9488;}
         </div>
       </div>
 
-      <!-- Main content -->
       <div style="flex:1;overflow-y:auto;">
-        <!-- Clients section -->
         <div id="sectionClients" style="padding:28px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
             <div>
@@ -116,12 +110,14 @@ input:focus{border-color:#0d9488;}
               Add client
             </button>
           </div>
-
-          <!-- Stats -->
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;">
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px;">
             <div style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:16px;">
               <div style="font-size:12px;color:#64748b;margin-bottom:4px;">Active</div>
               <div style="font-size:24px;font-weight:700;color:#0d9488;" id="statActive">0</div>
+            </div>
+            <div style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:16px;">
+              <div style="font-size:12px;color:#64748b;margin-bottom:4px;">Urgent</div>
+              <div style="font-size:24px;font-weight:700;color:#dc2626;" id="statUrgent">0</div>
             </div>
             <div style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:16px;">
               <div style="font-size:12px;color:#64748b;margin-bottom:4px;">Check-in needed</div>
@@ -136,21 +132,18 @@ input:focus{border-color:#0d9488;}
               <div style="font-size:24px;font-weight:700;color:#0f172a;" id="statTotal">0</div>
             </div>
           </div>
-
           <div id="clientListWrap">
-          <!-- Client list -->
           <div id="clientList" style="background:white;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden;">
             <div style="padding:40px;text-align:center;color:#94a3b8;">
               <p style="margin-bottom:12px;font-size:15px;">No clients yet</p>
               <button onclick="showAddClient()" style="padding:9px 18px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit;">Add your first client</button>
             </div>
           </div>
-        </div></div>
+          </div>
+        </div>
 
-        <!-- Messages section -->
-        <div id="sectionMessages" style="display:none;height:calc(100vh - 73px);display:none;">
+        <div id="sectionMessages" style="display:none;height:calc(100vh - 73px);">
           <div style="display:flex;height:100%;">
-            <!-- Conversation list -->
             <div style="width:300px;background:white;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;flex-shrink:0;">
               <div style="padding:20px 16px;border-bottom:1px solid #f1f5f9;">
                 <h2 style="font-size:16px;font-weight:600;color:#0f172a;">Messages</h2>
@@ -159,14 +152,12 @@ input:focus{border-color:#0d9488;}
                 <div style="padding:40px 16px;text-align:center;color:#94a3b8;font-size:14px;">No conversations yet.<br>Send a client their chat link to get started.</div>
               </div>
             </div>
-            <!-- Thread -->
             <div id="threadArea" style="flex:1;display:flex;flex-direction:column;background:#f8fafc;">
               <div style="flex:1;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:14px;">Select a conversation</div>
             </div>
           </div>
         </div>
 
-        <!-- Settings section -->
         <div id="sectionSettings" style="display:none;padding:28px;">
           <h1 style="font-size:22px;font-weight:700;color:#0f172a;letter-spacing:-0.3px;margin-bottom:24px;">Settings</h1>
           <div style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:24px;max-width:500px;">
@@ -203,8 +194,7 @@ input:focus{border-color:#0d9488;}
       </div>
     </div>
 
-    <!-- Add client modal -->
-    <div id="addClientModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;display:none;align-items:center;justify-content:center;">
+    <div id="addClientModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;align-items:center;justify-content:center;">
       <div style="background:white;border-radius:16px;padding:28px;width:100%;max-width:420px;margin:20px;">
         <h2 style="font-size:18px;font-weight:700;color:#0f172a;margin-bottom:6px;">Add client</h2>
         <p style="font-size:14px;color:#64748b;margin-bottom:20px;">Add a client to start tracking their follow-up</p>
@@ -236,10 +226,11 @@ input:focus{border-color:#0d9488;}
 
 <script>
 var session=null;
+var STATUS_LABELS={active:'Active',urgent:'Urgent',checkin:'Check-in needed',discharge:'Discharge'};
+var STATUS_COLORS={active:{bg:'#dcfce7',color:'#166534'},urgent:{bg:'#fef2f2',color:'#991b1b'},checkin:{bg:'#fef9c3',color:'#854d0e'},discharge:{bg:'#f1f5f9',color:'#475569'}};
 
 function showSignup(){document.getElementById('loginView').style.display='none';document.getElementById('signupView').style.display='block';}
 function showLogin(){document.getElementById('signupView').style.display='none';document.getElementById('loginView').style.display='block';}
-
 function showError(id,msg){var el=document.getElementById(id);el.textContent=msg;el.style.display='block';}
 function hideError(id){document.getElementById(id).style.display='none';}
 
@@ -274,65 +265,82 @@ var clients=[];
 
 function showDash(){
   document.getElementById('authWrap').style.display='none';
-  document.getElementById('loginView').style.display='none';
-  document.getElementById('signupView').style.display='none';
   document.getElementById('dashView').style.display='block';
   document.getElementById('sidebarName').textContent=session.name;
   document.getElementById('sidebarPractice').textContent=session.practice;
   loadClients();
 }
 
+function bizDaysLeft(lastAppt,days){
+  if(!lastAppt)return null;
+  var d=new Date(lastAppt);
+  var count=0;
+  while(count<days){d.setDate(d.getDate()+1);if(d.getDay()!==0&&d.getDay()!==6)count++;}
+  var now=new Date();now.setHours(0,0,0,0);
+  return Math.round((d-now)/(1000*60*60*24));
+}
+
+function getAutoStatus(client){
+  if(!client.last_appt)return'active';
+  var left=bizDaysLeft(client.last_appt,10);
+  if(left<0)return'discharge';
+  if(left<=3)return'checkin';
+  return'active';
+}
+
+function getStatus(client){
+  if(client.status&&client.status!=='auto'&&client.status!=='rebook')return client.status;
+  return getAutoStatus(client);
+}
+
+async function updateClientStatus(clientId,newStatus){
+  await fetch('/api/clients/'+clientId,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:newStatus})});
+  var c=clients.find(function(x){return x.id===clientId;});
+  if(c)c.status=newStatus;
+  showClientDetail(clientId);
+  loadClients();
+}
 
 async function showClientDetail(clientId){
   var client=clients.find(function(c){return c.id===clientId;});
   if(!client)return;
   var st=getStatus(client);
   var left=client.last_appt?bizDaysLeft(client.last_appt,10):null;
-  var statusLabels={active:'Active',checkin:'Check-in needed',discharge:'Discharge',rebook:'Rebook'};
-  var statusColors={active:{bg:'#dcfce7',color:'#166534'},checkin:{bg:'#fef9c3',color:'#854d0e'},discharge:{bg:'#f1f5f9',color:'#475569'},rebook:{bg:'#fef2f2',color:'#991b1b'}};
-  var sc=statusColors[st];
+  var sc=STATUS_COLORS[st]||STATUS_COLORS.active;
   var initials=client.name.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
   var cid=client.id;
-  
+
   var html='<div style="padding:28px;">';
-  html+='<div style="display:flex;align-items:center;gap:12px;margin-bottom:24px;">';
-  html+='<button onclick="showSection(\'clients\')" style="display:flex;align-items:center;gap:6px;padding:8px 12px;background:none;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;color:#64748b;cursor:pointer;font-family:inherit;">← Back</button>';
-  html+='</div>';
-  
+  html+='<button onclick="showSection(\'clients\')" style="display:flex;align-items:center;gap:6px;padding:8px 12px;background:none;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;color:#64748b;cursor:pointer;font-family:inherit;margin-bottom:24px;">← Back</button>';
   html+='<div style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:24px;margin-bottom:16px;">';
   html+='<div style="display:flex;align-items:flex-start;gap:16px;">';
   html+='<div style="width:56px;height:56px;border-radius:50%;background:#ccfbf1;color:#0f766e;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:500;flex-shrink:0;">'+initials+'</div>';
   html+='<div style="flex:1;">';
-  html+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">';
+  html+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;">';
   html+='<h1 style="font-size:20px;font-weight:700;color:#0f172a;">'+client.name+'</h1>';
-  html+='<span style="font-size:12px;font-weight:600;padding:3px 9px;border-radius:5px;background:'+sc.bg+';color:'+sc.color+';">'+statusLabels[st]+'</span>';
+  html+='<span style="font-size:12px;font-weight:600;padding:3px 9px;border-radius:5px;background:'+sc.bg+';color:'+sc.color+';">'+STATUS_LABELS[st]+'</span>';
   html+='</div>';
+  html+='<div style="margin-bottom:12px;">';
+  html+='<label style="font-size:12px;color:#64748b;display:block;margin-bottom:4px;">Change status</label>';
+  html+='<select onchange="updateClientStatus(\''+cid+'\',this.value)" style="padding:7px 10px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer;color:#0f172a;background:white;">';
+  ['active','urgent','checkin','discharge'].forEach(function(s){html+='<option value="'+s+'"'+(st===s?' selected':'')+'>'+STATUS_LABELS[s]+'</option>';});
+  html+='</select></div>';
   if(client.phone)html+='<div style="font-size:14px;color:#64748b;margin-bottom:2px;">📞 '+client.phone+'</div>';
   if(client.email)html+='<div style="font-size:14px;color:#64748b;margin-bottom:2px;">✉️ '+client.email+'</div>';
   if(client.last_appt)html+='<div style="font-size:14px;color:#64748b;">Last appt: '+new Date(client.last_appt).toLocaleDateString('en-AU')+(left!==null?' · '+(left>0?left+' days left in window':Math.abs(left)+' days overdue'):'')+'</div>';
   html+='</div>';
-  html+='<div style="display:flex;gap:8px;flex-shrink:0;">';
-  html+='<button onclick="showMessageThread(\''+cid+'\')" style="display:flex;align-items:center;gap:6px;padding:9px 14px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;">💬 Message</button>';
-  html+='</div>';
+  html+='<button onclick="showMessageThread(\''+cid+'\')" style="display:flex;align-items:center;gap:6px;padding:9px 14px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;flex-shrink:0;">💬 Message</button>';
   html+='</div></div>';
-  
-  html+='<div style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:24px;margin-bottom:16px;">';
-  html+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">';
-  html+='<h2 style="font-size:16px;font-weight:600;color:#0f172a;">Tasks</h2>';
-  html+='</div>';
+  html+='<div style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:24px;">';
+  html+='<h2 style="font-size:16px;font-weight:600;color:#0f172a;margin-bottom:16px;">Tasks</h2>';
   html+='<div id="taskList_'+cid+'"><div style="color:#94a3b8;font-size:14px;">Loading tasks...</div></div>';
   html+='<div style="margin-top:16px;display:flex;gap:8px;">';
   html+='<input id="newTaskInput_'+cid+'" type="text" placeholder="Add a task..." style="flex:1;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;" />';
   html+='<button onclick="doAddTask(\''+cid+'\')" style="padding:9px 16px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit;">Add</button>';
-  html+='</div></div>';
-  html+='</div>';
-  
+  html+='</div></div></div>';
+
   var detailDiv=document.getElementById('clientDetail');
-  if(!detailDiv){
-    detailDiv=document.createElement('div');
-    detailDiv.id='clientDetail';
-    document.getElementById('sectionClients').appendChild(detailDiv);
-  }
+  if(!detailDiv){detailDiv=document.createElement('div');detailDiv.id='clientDetail';document.getElementById('sectionClients').appendChild(detailDiv);}
   detailDiv.innerHTML=html;
   document.getElementById('clientListWrap').style.display='none';
   detailDiv.style.display='block';
@@ -340,35 +348,28 @@ async function showClientDetail(clientId){
   loadTasks(cid);
 }
 
-
 async function loadTasks(clientId){
   var r=await fetch('/api/tasks?clientId='+clientId);
   var d=await r.json();
-  renderTasks(clientId, d.tasks||[]);
+  renderTasks(clientId,d.tasks||[]);
 }
 
-function renderTasks(clientId, tasks){
+function renderTasks(clientId,tasks){
   var el=document.getElementById('taskList_'+clientId);
   if(!el)return;
   if(!tasks.length){el.innerHTML='<div style="color:#94a3b8;font-size:14px;">No tasks yet</div>';return;}
   var html='';
   tasks.forEach(function(t){
-    var chk=t.done?'checked':'';
     html+='<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f8fafc;">';
-    html+='<input type="checkbox" '+chk+' data-cid="'+clientId+'" data-tid="'+t.id+'" class="task-check" style="width:16px;height:16px;cursor:pointer;" />';
+    html+='<input type="checkbox" '+(t.done?'checked':'')+' data-cid="'+clientId+'" data-tid="'+t.id+'" class="task-check" style="width:16px;height:16px;cursor:pointer;" />';
     html+='<span style="flex:1;font-size:14px;'+(t.done?'text-decoration:line-through;color:#94a3b8;':'color:#0f172a;')+'">'+t.note+'</span>';
-    html+='<button data-cid="'+clientId+'" data-tid="'+t.id+'" class="task-del" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;padding:0 4px;line-height:1;">×</button>';
+    html+='<button data-cid="'+clientId+'" data-tid="'+t.id+'" class="task-del" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:18px;padding:0 4px;">×</button>';
     html+='</div>';
   });
   el.innerHTML=html;
-  el.querySelectorAll('.task-check').forEach(function(cb){
-    cb.addEventListener('change',function(){doToggleTask(this.dataset.cid,this.dataset.tid,this.checked);});
-  });
-  el.querySelectorAll('.task-del').forEach(function(btn){
-    btn.addEventListener('click',function(){doDeleteTask(this.dataset.cid,this.dataset.tid);});
-  });
+  el.querySelectorAll('.task-check').forEach(function(cb){cb.addEventListener('change',function(){doToggleTask(this.dataset.cid,this.dataset.tid,this.checked);});});
+  el.querySelectorAll('.task-del').forEach(function(btn){btn.addEventListener('click',function(){doDeleteTask(this.dataset.cid,this.dataset.tid);});});
 }
-
 
 async function doAddTask(clientId){
   var input=document.getElementById('newTaskInput_'+clientId);
@@ -393,7 +394,6 @@ async function doDeleteTask(clientId,taskId){
 
 async function showMessageThread(clientId){
   showSection('messages');
-  // Get or create chat link
   var r=await fetch('/api/chat-link/'+clientId);
   var d=await r.json();
   loadThread(clientId,d.url);
@@ -404,19 +404,14 @@ async function loadConversations(){
   fetch('/api/chat/conversations/'+session.id).then(function(r){return r.json();}).then(function(d){
     var convs=d.conversations||[];
     var el=document.getElementById('conversationList');
-    if(!convs.length){
-      el.innerHTML='<div style="padding:40px 16px;text-align:center;color:#94a3b8;font-size:14px;">No conversations yet.<br>Send a client their chat link to get started.</div>';
-      return;
-    }
+    if(!convs.length){el.innerHTML='<div style="padding:40px 16px;text-align:center;color:#94a3b8;font-size:14px;">No conversations yet.<br>Send a client their chat link to get started.</div>';return;}
     var html='';
     convs.forEach(function(c){
       var initials=c.client_name.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
       html+='<div class="conv-row" data-cid="'+c.client_id+'" style="padding:14px 16px;cursor:pointer;border-bottom:1px solid #f0fdfa;display:flex;align-items:center;gap:10px;">';
       html+='<div style="width:40px;height:40px;border-radius:50%;background:#ccfbf1;color:#0f766e;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0;">'+initials+'</div>';
-      html+='<div style="flex:1;min-width:0;">';
-      html+='<div style="font-weight:'+(c.unread>0?'600':'400')+';font-size:14px;color:#0f172a;">'+c.client_name+'</div>';
-      html+='<div style="font-size:12px;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(c.last_message||'No messages yet')+'</div>';
-      html+='</div>';
+      html+='<div style="flex:1;min-width:0;"><div style="font-weight:'+(c.unread>0?'600':'400')+';font-size:14px;color:#0f172a;">'+c.client_name+'</div>';
+      html+='<div style="font-size:12px;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(c.last_message||'No messages yet')+'</div></div>';
       if(c.unread>0)html+='<div style="width:18px;height:18px;background:#0d9488;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:white;font-weight:700;">'+c.unread+'</div>';
       html+='</div>';
     });
@@ -429,63 +424,39 @@ async function loadConversations(){
   });
 }
 
-
 var currentClientId=null;
 var currentChatUrl=null;
 
 async function loadThread(clientId,chatUrl){
-  currentClientId=clientId;
-  currentChatUrl=chatUrl;
+  currentClientId=clientId;currentChatUrl=chatUrl;
   var client=clients.find(function(c){return c.id===clientId;});
   var name=client?client.name:'Client';
   var initials=name.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase();
-  
-  if(!chatUrl){
-    var r=await fetch('/api/chat-link/'+clientId);
-    var d=await r.json();
-    currentChatUrl=d.url;
-  }
-  
+  if(!chatUrl){var r=await fetch('/api/chat-link/'+clientId);var d=await r.json();currentChatUrl=d.url;}
   var msgs=await fetch('/api/chat/thread/'+clientId).then(function(r){return r.json();});
   var messages=msgs.messages||[];
-  
   var html='<div style="background:white;padding:14px 20px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;">';
-  html+='<div style="display:flex;align-items:center;gap:12px;">';
-  html+='<div style="width:40px;height:40px;border-radius:50%;background:#ccfbf1;color:#0f766e;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;">'+initials+'</div>';
+  html+='<div style="display:flex;align-items:center;gap:12px;"><div style="width:40px;height:40px;border-radius:50%;background:#ccfbf1;color:#0f766e;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;">'+initials+'</div>';
   html+='<div style="font-weight:500;font-size:15px;color:#0f172a;">'+name+'</div></div>';
-  html+='<button onclick="copyChatLink()" style="display:flex;align-items:center;gap:6px;padding:7px 12px;background:#f0fdfa;color:#0d9488;border:1px solid #ccfbf1;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;">📋 Copy chat link</button>';
-  html+='</div>';
+  html+='<button onclick="copyChatLink()" style="display:flex;align-items:center;gap:6px;padding:7px 12px;background:#f0fdfa;color:#0d9488;border:1px solid #ccfbf1;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;">📋 Copy chat link</button></div>';
   html+='<div id="threadMessages" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:6px;background:#f8fafc;">';
-  if(!messages.length){
-    html+='<div style="text-align:center;color:#94a3b8;font-size:14px;margin-top:40px;">No messages yet. Share the chat link with '+name+' to get started.</div>';
-  } else {
-    messages.forEach(function(m){
-      var time=new Date(m.created_at).toLocaleString('en-AU',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'});
-      html+='<div style="text-align:center;font-size:11px;color:#94a3b8;margin:2px 0;">'+time+'</div>';
-      if(m.from_type==='client'){
-        html+='<div style="display:flex;justify-content:flex-start;"><div style="background:white;color:#0f172a;border:1px solid #ccfbf1;border-radius:18px 18px 18px 4px;padding:10px 14px;font-size:14px;max-width:68%;">'+m.body+'</div></div>';
-      } else {
-        html+='<div style="display:flex;justify-content:flex-end;"><div style="background:#0d9488;color:white;border-radius:18px 18px 4px 18px;padding:10px 14px;font-size:14px;max-width:68%;">'+m.body+'</div></div>';
-      }
-    });
-  }
-  html+='</div>';
-  html+='<div style="background:white;padding:12px 16px;border-top:1px solid #e2e8f0;display:flex;gap:10px;">';
+  if(!messages.length){html+='<div style="text-align:center;color:#94a3b8;font-size:14px;margin-top:40px;">No messages yet. Share the chat link with '+name+' to get started.</div>';}
+  else{messages.forEach(function(m){
+    var time=new Date(m.created_at).toLocaleString('en-AU',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'});
+    html+='<div style="text-align:center;font-size:11px;color:#94a3b8;margin:2px 0;">'+time+'</div>';
+    if(m.from_type==='client'){html+='<div style="display:flex;justify-content:flex-start;"><div style="background:white;color:#0f172a;border:1px solid #ccfbf1;border-radius:18px 18px 18px 4px;padding:10px 14px;font-size:14px;max-width:68%;">'+m.body+'</div></div>';}
+    else{html+='<div style="display:flex;justify-content:flex-end;"><div style="background:#0d9488;color:white;border-radius:18px 18px 4px 18px;padding:10px 14px;font-size:14px;max-width:68%;">'+m.body+'</div></div>';}
+  });}
+  html+='</div><div style="background:white;padding:12px 16px;border-top:1px solid #e2e8f0;display:flex;gap:10px;">';
   html+='<input id="replyInput" type="text" placeholder="Message '+name+'..." style="flex:1;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;font-family:inherit;" onkeydown="if(event.key===\'Enter\')sendReply()" />';
-  html+='<button onclick="sendReply()" style="padding:10px 16px;background:#0d9488;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit;">Send</button>';
-  html+='</div>';
-  
+  html+='<button onclick="sendReply()" style="padding:10px 16px;background:#0d9488;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit;">Send</button></div>';
   document.getElementById('threadArea').innerHTML=html;
   var threadMsgs=document.getElementById('threadMessages');
   if(threadMsgs)threadMsgs.scrollTop=threadMsgs.scrollHeight;
 }
 
 function copyChatLink(){
-  if(currentChatUrl){
-    navigator.clipboard.writeText(currentChatUrl).then(function(){
-      alert('Chat link copied! Share with your client: '+currentChatUrl);
-    });
-  }
+  if(currentChatUrl){navigator.clipboard.writeText(currentChatUrl).then(function(){alert('Chat link copied! Share with your client: '+currentChatUrl);});}
 }
 
 async function sendReply(){
@@ -499,7 +470,8 @@ async function sendReply(){
 
 function showSection(s){
   ['clients','messages','settings'].forEach(function(sec){
-    document.getElementById('section'+sec.charAt(0).toUpperCase()+sec.slice(1)).style.display=sec===s?'block':'none';
+    var el=document.getElementById('section'+sec.charAt(0).toUpperCase()+sec.slice(1));
+    if(el)el.style.display=sec===s?'block':'none';
     var btn=document.getElementById('nav'+sec.charAt(0).toUpperCase()+sec.slice(1));
     if(btn)btn.className='nav-btn'+(sec===s?' active':'');
   });
@@ -510,6 +482,7 @@ function showSection(s){
     if(listWrap)listWrap.style.display='block';
     loadClients();
   }
+  if(s==='messages')loadConversations();
 }
 
 function showAddClient(){
@@ -521,29 +494,17 @@ function showAddClient(){
   document.getElementById('addClientError').style.display='none';
 }
 
-function hideAddClient(){
-  document.getElementById('addClientModal').style.display='none';
-}
+function hideAddClient(){document.getElementById('addClientModal').style.display='none';}
 
 async function doAddClient(){
   var name=document.getElementById('newClientName').value.trim();
   var phone=document.getElementById('newClientPhone').value.trim();
   var email=document.getElementById('newClientEmail').value.trim();
   var lastAppt=document.getElementById('newClientDate').value;
-  if(!name){
-    var el=document.getElementById('addClientError');
-    el.textContent='Please enter a client name';
-    el.style.display='block';
-    return;
-  }
+  if(!name){var el=document.getElementById('addClientError');el.textContent='Please enter a client name';el.style.display='block';return;}
   var r=await fetch('/api/clients',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({practitionerId:session.id,name,phone,email,lastAppt})});
   var d=await r.json();
-  if(d.error){
-    var el=document.getElementById('addClientError');
-    el.textContent=d.error;
-    el.style.display='block';
-    return;
-  }
+  if(d.error){var el=document.getElementById('addClientError');el.textContent=d.error;el.style.display='block';return;}
   hideAddClient();
   loadClients();
 }
@@ -552,54 +513,25 @@ async function loadClients(){
   var r=await fetch('/api/clients?practitionerId='+session.id);
   var d=await r.json();
   clients=d.clients||[];
-  // Load tasks for all clients
   var taskPromises=clients.map(function(c){
-    return fetch('/api/tasks?clientId='+c.id).then(function(r){return r.json();}).then(function(d){
-      c.tasks=d.tasks||[];
-    }).catch(function(){c.tasks=[];});
+    return fetch('/api/tasks?clientId='+c.id).then(function(r){return r.json();}).then(function(d){c.tasks=d.tasks||[];}).catch(function(){c.tasks=[];});
   });
   await Promise.all(taskPromises);
   renderClients();
 }
 
-function bizDaysLeft(lastAppt,days){
-  if(!lastAppt)return null;
-  var d=new Date(lastAppt);
-  var count=0;
-  while(count<days){
-    d.setDate(d.getDate()+1);
-    if(d.getDay()!==0&&d.getDay()!==6)count++;
-  }
-  var now=new Date();
-  now.setHours(0,0,0,0);
-  var diff=Math.round((d-now)/(1000*60*60*24));
-  return diff;
-}
-
-function getStatus(client){
-  if(!client.last_appt)return'rebook';
-  var left=bizDaysLeft(client.last_appt,10);
-  if(left<0)return'discharge';
-  if(left<=3)return'checkin';
-  return'active';
-}
-
 function renderClients(){
   if(!document.getElementById('clientList'))return;
-  var active=0,checkin=0,discharge=0;
+  var active=0,urgent=0,checkin=0,discharge=0;
   var html='';
   if(!clients.length){
     html='<div style="padding:40px;text-align:center;color:#94a3b8;"><p style="margin-bottom:12px;font-size:15px;">No clients yet</p><button onclick="showAddClient()" style="padding:9px 18px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit;">Add your first client</button></div>';
   } else {
-    var statusLabels={active:'Active',checkin:'Check-in needed',discharge:'Discharge',rebook:'Rebook'};
-    var statusColors={active:{bg:'#dcfce7',color:'#166534'},checkin:{bg:'#fef9c3',color:'#854d0e'},discharge:{bg:'#f1f5f9',color:'#475569'},rebook:{bg:'#fef2f2',color:'#991b1b'}};
     clients.forEach(function(c){
       var st=getStatus(c);
-      if(st==='active')active++;
-      else if(st==='checkin')checkin++;
-      else if(st==='discharge')discharge++;
+      if(st==='active')active++;else if(st==='urgent')urgent++;else if(st==='checkin')checkin++;else if(st==='discharge')discharge++;
       var left=c.last_appt?bizDaysLeft(c.last_appt,10):null;
-      var sc=statusColors[st];
+      var sc=STATUS_COLORS[st]||STATUS_COLORS.active;
       html+='<div style="display:flex;align-items:center;padding:14px 20px;border-bottom:1px solid #f8fafc;gap:14px;cursor:pointer;" onclick="showClientDetail(\''+c.id+'\')" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'\'">';
       html+='<div style="width:40px;height:40px;border-radius:50%;background:#ccfbf1;color:#0f766e;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0;">'+c.name.split(' ').map(function(n){return n[0];}).join('').slice(0,2).toUpperCase()+'</div>';
       html+='<div style="flex:1;min-width:0;"><div style="font-weight:500;font-size:14px;color:#0f172a;">'+c.name+'</div>';
@@ -607,21 +539,19 @@ function renderClients(){
       var pending=(c.tasks||[]).filter(function(t){return !t.done;});
       if(pending.length>0){
         html+='<div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:4px;">';
-        pending.slice(0,2).forEach(function(t){
-          html+='<span style="font-size:11px;background:#f0fdfa;color:#0d9488;padding:2px 7px;border-radius:4px;border:1px solid #ccfbf1;">'+t.note+'</span>';
-        });
-        if(pending.length>2)html+='<span style="font-size:11px;color:#94a3b8;">+'+( pending.length-2)+' more</span>';
+        pending.slice(0,2).forEach(function(t){html+='<span style="font-size:11px;background:#f0fdfa;color:#0d9488;padding:2px 7px;border-radius:4px;border:1px solid #ccfbf1;">'+t.note+'</span>';});
+        if(pending.length>2)html+='<span style="font-size:11px;color:#94a3b8;">+'+(pending.length-2)+' more</span>';
         html+='</div>';
       }
-      html+='</div>';
-      html+='<div style="display:flex;align-items:center;gap:10px;">';
+      html+='</div><div style="display:flex;align-items:center;gap:10px;">';
       if(left!==null)html+='<span style="font-size:12px;color:#64748b;">'+(left>0?left+' days left':Math.abs(left)+' days overdue')+'</span>';
-      html+='<span style="font-size:11px;font-weight:600;padding:3px 8px;border-radius:5px;background:'+sc.bg+';color:'+sc.color+';">'+statusLabels[st]+'</span>';
+      html+='<span style="font-size:11px;font-weight:600;padding:3px 8px;border-radius:5px;background:'+sc.bg+';color:'+sc.color+';">'+STATUS_LABELS[st]+'</span>';
       html+='</div></div>';
     });
   }
   document.getElementById('clientList').innerHTML=html;
   document.getElementById('statActive').textContent=active;
+  document.getElementById('statUrgent').textContent=urgent;
   document.getElementById('statCheckin').textContent=checkin;
   document.getElementById('statDischarge').textContent=discharge;
   document.getElementById('statTotal').textContent=clients.length;
@@ -629,8 +559,7 @@ function renderClients(){
 }
 
 function doLogout(){
-  session=null;
-  clients=[];
+  session=null;clients=[];
   document.getElementById('dashView').style.display='none';
   document.getElementById('authWrap').style.display='flex';
   document.getElementById('loginView').style.display='block';

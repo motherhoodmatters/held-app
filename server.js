@@ -19,18 +19,19 @@ async function initDB(){
     splose_api_key TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW()
   )`);
-  await pool.query(`ALTER TABLE clients ADD COLUMN IF NOT EXISTS phone TEXT`).catch(()=>{});
-  await pool.query(`ALTER TABLE clients ADD COLUMN IF NOT EXISTS email TEXT`).catch(()=>{});
-  await pool.query(`ALTER TABLE clients ADD COLUMN IF NOT EXISTS last_appt DATE`).catch(()=>{});
   await pool.query(`CREATE TABLE IF NOT EXISTS clients(
     id TEXT PRIMARY KEY,
     practitioner_id TEXT,
     name TEXT,
+    phone TEXT,
+    email TEXT, 
     splose_id TEXT,
     last_appt DATE,
     status TEXT DEFAULT 'active',
     created_at TIMESTAMPTZ DEFAULT NOW()
-  )`);
+  )`);await pool.query(`ALTER TABLE clients ADD COLUMN IF NOT EXISTS phone TEXT`).catch(()=>{});
+  await pool.query(`ALTER TABLE clients ADD COLUMN IF NOT EXISTS email TEXT`).catch(()=>{});
+  await pool.query(`ALTER TABLE clients ADD COLUMN IF NOT EXISTS last_appt DATE`).catch(()=>{});
   await pool.query(`CREATE TABLE IF NOT EXISTS chat_tokens(
     id SERIAL PRIMARY KEY,
     client_id TEXT,

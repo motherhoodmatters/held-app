@@ -1,14 +1,601 @@
 <!DOCTYPE html>
-<html style="width: 100%; height: 100%; overflow: hidden">
-
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Security-Policy"
-    content="script-src https://apps.canva-apps.com https://edge.fullstory.com; connect-src data: https://apps.canva-apps.com https://image-manipulation.canva.com https://image.canva.com https://media-private.canva.com https://media-public.canva.com https://s3.amazonaws.com/image-manipulation.canva.com/ https://s3.amazonaws.com/image.canva.com/ https://s3.amazonaws.com/media-private.canva.com/ https://s3.amazonaws.com/media-public.canva.com/; frame-src 'none'; child-src 'none'; worker-src 'none'; form-action 'none';">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Eily">
+<title>Eily — Client follow-up & messaging</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0fdfa;min-height:100vh;}
+.card{background:white;border-radius:20px;padding:36px;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(13,148,136,0.12);}
+#authWrap{position:fixed;inset:0;z-index:50;background:#f0fdfa;display:flex;align-items:center;justify-content:center;padding:20px;}
+.logo{display:flex;align-items:center;gap:12px;margin-bottom:32px;}
+.logo-icon{width:44px;height:44px;background:#0d9488;border-radius:12px;display:flex;align-items:center;justify-content:center;}
+.logo-name{font-family:'Playfair Display',serif;font-size:22px;font-weight:600;color:#0f172a;letter-spacing:-0.5px;}
+.logo-tag{font-size:12px;color:#64748b;}
+h1{font-size:22px;font-weight:700;color:#0f172a;margin-bottom:6px;letter-spacing:-0.3px;}
+.sub{font-size:14px;color:#64748b;margin-bottom:28px;}
+.field{margin-bottom:16px;}
+label{display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px;}
+input{width:100%;padding:11px 14px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:15px;color:#0f172a;outline:none;transition:border 0.15s;font-family:inherit;}
+input:focus{border-color:#0d9488;}
+.btn{width:100%;padding:13px;background:#0d9488;color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;margin-top:8px;font-family:inherit;transition:background 0.15s;}
+.btn:hover{background:#0f766e;}
+.switch{text-align:center;margin-top:20px;font-size:14px;color:#64748b;}
+.switch a{color:#0d9488;text-decoration:none;font-weight:500;cursor:pointer;}
+.error{background:#fef2f2;color:#dc2626;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none;}
+.success{background:#f0fdf4;color:#16a34a;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none;}
+.nav-btn{display:flex;align-items:center;gap:10px;width:100%;padding:10px 12px;background:none;border:none;border-radius:8px;font-size:14px;color:#64748b;cursor:pointer;font-family:inherit;text-align:left;transition:all 0.15s;}
+.nav-btn:hover{background:#f0fdfa;color:#0d9488;}
+.nav-btn.active{background:#f0fdfa;color:#0d9488;font-weight:500;}
+.mobile-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid #e2e8f0;z-index:40;padding:8px 0;}
+.mobile-nav-inner{display:flex;justify-content:space-around;}
+.mobile-nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 16px;background:none;border:none;font-size:10px;color:#94a3b8;cursor:pointer;font-family:inherit;}
+.mobile-nav-btn.active{color:#0d9488;}
+.mobile-nav-btn svg{width:22px;height:22px;}
+.sidebar{width:260px;background:#f8fafc;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;padding:20px 0;flex-shrink:0;}
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .mobile-nav{display:block;}
+  .main-content{padding-bottom:70px;}
+  .section-pad{padding:16px !important;}
+  .stats-grid{grid-template-columns:repeat(3,1fr) !important;gap:8px !important;}
+  .stat-card{padding:10px !important;}
+  .stat-num{font-size:20px !important;}
+  .stat-label{font-size:11px !important;}
+  .page-title{font-size:18px !important;}
+  .add-btn span{display:none;}
+  .messages-layout{flex-direction:column;}
+  .conv-list{width:100% !important;height:40vh;border-right:none !important;border-bottom:1px solid #e2e8f0;}
+  .thread-area{height:60vh;}
+}
+</style>
 </head>
+<body>
+<div id="authWrap">
+  <div class="card">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div><div class="logo-name">Eily</div><div class="logo-tag">Client follow-up & messaging</div></div>
+    </div>
+    <div id="loginView">
+      <h1>Welcome back</h1>
+      <p class="sub">Sign in to your practice account</p>
+      <div class="error" id="loginError"></div>
+      <div class="field"><label>Email</label><input type="email" id="loginEmail" placeholder="you@practice.com" /></div>
+      <div class="field"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••" /></div>
+      <button class="btn" onclick="doLogin()">Sign in</button>
+      <div class="switch">Don't have an account? <a onclick="showSignup()">Sign up free</a></div>
+    </div>
+    <div id="signupView" style="display:none">
+      <h1>Create your account</h1>
+      <p class="sub">Start your 14-day free trial</p>
+      <div class="error" id="signupError"></div>
+      <div class="success" id="signupSuccess"></div>
+      <div class="field"><label>Your name</label><input type="text" id="signupName" placeholder="Jane Brown" /></div>
+      <div class="field"><label>Practice name</label><input type="text" id="signupPractice" placeholder="e.g. Bloom Lactation" /></div>
+      <div class="field"><label>Email</label><input type="email" id="signupEmail" placeholder="you@practice.com" /></div>
+      <div class="field"><label>Password</label><input type="password" id="signupPassword" placeholder="Min 8 characters" /></div>
+      <button class="btn" onclick="doSignup()">Create account</button>
+      <div class="switch">Already have an account? <a onclick="showLogin()">Sign in</a></div>
+    </div>
+  </div>
+</div>
+<div id="dashView" style="display:none;min-height:100vh;">
+  <div style="display:flex;height:100vh;">
+    <div class="sidebar">
+      <div style="padding:0 16px 20px;border-bottom:1px solid #e2e8f0;">
+        <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:600;color:#0d9488;margin-bottom:4px;">Eily</div>
+        <div style="font-size:13px;font-weight:600;color:#0f172a;" id="sidebarName"></div>
+        <div style="font-size:12px;color:#64748b;" id="sidebarPractice"></div>
+      </div>
+      <nav style="padding:12px 8px;flex:1;">
+        <button onclick="showSection('clients')" class="nav-btn active" id="navClients">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Clients
+        </button>
+        <button onclick="showSection('messages')" class="nav-btn" id="navMessages">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Messages
+        </button>
+        <button onclick="showSection('settings')" class="nav-btn" id="navSettings">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </button>
+      </nav>
+      <div style="padding:16px;">
+        <button onclick="doLogout()" style="width:100%;padding:9px;background:none;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;color:#64748b;cursor:pointer;font-family:inherit;">Sign out</button>
+      </div>
+    </div>
+    <div style="flex:1;overflow-y:auto;" class="main-content">
+      <div id="sectionClients" class="section-pad" style="padding:28px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <div>
+            <h1 class="page-title" style="font-size:22px;font-weight:700;color:#0f172a;">Clients</h1>
+            <p style="font-size:14px;color:#64748b;margin-top:2px;" id="clientCount">Loading...</p>
+          </div>
+          <button onclick="showAddClient()" class="add-btn" style="display:flex;align-items:center;gap:8px;padding:10px 16px;background:#0d9488;color:white;border:none;border-radius:10px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Add client</span>
+          </button>
+        </div>
+        <div class="stats-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;">
+          <div class="stat-card" style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:16px;">
+            <div class="stat-label" style="font-size:12px;color:#64748b;margin-bottom:4px;">Active</div>
+            <div class="stat-num" style="font-size:24px;font-weight:700;color:#0d9488;" id="statActive">0</div>
+          </div>
+          <div class="stat-card" style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:16px;">
+            <div class="stat-label" style="font-size:12px;color:#64748b;margin-bottom:4px;">Urgent</div>
+            <div class="stat-num" style="font-size:24px;font-weight:700;color:#dc2626;" id="statUrgent">0</div>
+          </div>
+          <div class="stat-card" style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:16px;">
+            <div class="stat-label" style="font-size:12px;color:#64748b;margin-bottom:4px;">Check-in</div>
+            <div class="stat-num" style="font-size:24px;font-weight:700;color:#f59e0b;" id="statCheckin">0</div>
+          </div>
+          <div class="stat-card" style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:16px;">
+            <div class="stat-label" style="font-size:12px;color:#64748b;margin-bottom:4px;">Discharge</div>
+            <div class="stat-num" style="font-size:24px;font-weight:700;color:#94a3b8;" id="statDischarge">0</div>
+          </div>
+          <div class="stat-card" style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:16px;">
+            <div class="stat-label" style="font-size:12px;color:#64748b;margin-bottom:4px;">Total</div>
+            <div class="stat-num" style="font-size:24px;font-weight:700;color:#0f172a;" id="statTotal">0</div>
+          </div>
+        </div>
+        <div id="clientListWrap">
+          <div id="clientList" style="background:white;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden;">
+            <div style="padding:40px;text-align:center;color:#94a3b8;">
+              <p style="margin-bottom:12px;font-size:15px;">No clients yet</p>
+              <button onclick="showAddClient()" style="padding:9px 18px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit;">Add your first client</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="sectionMessages" style="display:none;height:100vh;">
+        <div class="messages-layout" style="display:flex;height:100%;">
+          <div class="conv-list" style="width:300px;background:white;border-right:1px solid #e2e8f0;display:flex;flex-direction:column;flex-shrink:0;">
+            <div style="padding:20px 16px;border-bottom:1px solid #f1f5f9;">
+              <h2 style="font-size:16px;font-weight:600;color:#0f172a;">Messages</h2>
+            </div>
+            <div id="conversationList" style="overflow-y:auto;flex:1;">
+              <div style="padding:40px 16px;text-align:center;color:#94a3b8;font-size:14px;">No conversations yet.<br>Send a client their chat link to get started.</div>
+            </div>
+          </div>
+          <div id="threadArea" class="thread-area" style="flex:1;display:flex;flex-direction:column;background:#f8fafc;">
+            <div style="flex:1;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:14px;">Select a conversation</div>
+          </div>
+        </div>
+      </div>
+      <div id="sectionSettings" class="section-pad" style="display:none;padding:28px;">
+        <h1 class="page-title" style="font-size:22px;font-weight:700;color:#0f172a;margin-bottom:24px;">Settings</h1>
+        <div style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:24px;max-width:500px;">
+          <h2 style="font-size:16px;font-weight:600;color:#0f172a;margin-bottom:16px;">Practice details</h2>
+          <div style="margin-bottom:16px;">
+            <label style="display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px;">Your name</label>
+            <input id="settingName" type="text" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;" />
+          </div>
+          <div style="margin-bottom:16px;">
+            <label style="display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px;">Practice name</label>
+            <input id="settingPractice" type="text" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;" />
+          </div>
+          <div style="margin-bottom:20px;">
+            <h3 style="font-size:14px;font-weight:600;color:#0f172a;margin-bottom:12px;">Connect your practice software</h3>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:8px;display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-size:14px;color:#0f172a;">Splose</span>
+                <button style="padding:6px 12px;background:#f0fdfa;color:#0d9488;border:1px solid #ccfbf1;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;">Connect</button>
+              </div>
+              <div style="padding:12px 14px;border:1.5px solid #e2e8f0;border-radius:8px;display:flex;align-items:center;justify-content:space-between;">
+                <span style="font-size:14px;color:#0f172a;">Cliniko</span>
+                <button style="padding:6px 12px;background:#f0fdfa;color:#0d9488;border:1px solid #ccfbf1;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;">Connect</button>
+              </div>
+            </div>
+          </div>
+          <button onclick="doSaveSettings()" style="padding:10px 20px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;">Save changes</button>
+          <div style="margin-top:16px;padding-top:16px;border-top:1px solid #f1f5f9;">
+            <button onclick="doLogout()" style="padding:9px 16px;background:none;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;color:#64748b;cursor:pointer;font-family:inherit;">Sign out</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <nav class="mobile-nav">
+    <div class="mobile-nav-inner">
+      <button onclick="showSection('clients')" class="mobile-nav-btn active" id="mnavClients">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Clients
+      </button>
+      <button onclick="showSection('messages')" class="mobile-nav-btn" id="mnavMessages">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Messages
+      </button>
+      <button onclick="showSection('settings')" class="mobile-nav-btn" id="mnavSettings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Settings
+      </button>
+    </div>
+  </nav>
+  <div id="addClientModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:100;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:white;border-radius:16px;padding:24px;width:100%;max-width:420px;">
+      <h2 style="font-size:18px;font-weight:700;color:#0f172a;margin-bottom:6px;">Add client</h2>
+      <p style="font-size:14px;color:#64748b;margin-bottom:20px;">Add a client to start tracking their follow-up</p>
+      <div id="addClientError" style="display:none;background:#fef2f2;color:#dc2626;padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;"></div>
+      <div style="margin-bottom:14px;">
+        <label style="display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px;">Full name *</label>
+        <input id="newClientName" type="text" placeholder="Jane Smith" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;" />
+      </div>
+      <div style="margin-bottom:14px;">
+        <label style="display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px;">Phone</label>
+        <input id="newClientPhone" type="tel" placeholder="0400 000 000" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;" />
+      </div>
+      <div style="margin-bottom:14px;">
+        <label style="display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px;">Email</label>
+        <input id="newClientEmail" type="email" placeholder="jane@email.com" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;" />
+      </div>
+      <div style="margin-bottom:20px;">
+        <label style="display:block;font-size:13px;font-weight:500;color:#374151;margin-bottom:6px;">Last appointment date</label>
+        <input id="newClientDate" type="date" style="width:100%;padding:10px 14px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;" />
+      </div>
+      <div style="display:flex;gap:10px;">
+        <button onclick="hideAddClient()" style="flex:1;padding:11px;background:none;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit;">Cancel</button>
+        <button onclick="doAddClient()" style="flex:1;padding:11px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;">Add client</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+var session=null;
+try{session=JSON.parse(localStorage.getItem('eilySession'));}catch(e){}
+var STATUS_LABELS={active:'Active',urgent:'Urgent',checkin:'Check-in needed',discharge:'Discharge'};
+var STATUS_COLORS={active:{bg:'#dcfce7',color:'#166534'},urgent:{bg:'#fef2f2',color:'#991b1b'},checkin:{bg:'#fef9c3',color:'#854d0e'},discharge:{bg:'#f1f5f9',color:'#475569'}};
 
-<body style="width: 100%; height: 100%; margin: 0">
-  <script type="text/canva-app" x-src="./removebg_brush.js"></script>
-  <script src="https://apps.canva-apps.com/bundle/v1/client-loader.js" data-app-bucket-url="https://apps.canva-apps.com"></script>
+function showSignup(){document.getElementById('loginView').style.display='none';document.getElementById('signupView').style.display='block';}
+function showLogin(){document.getElementById('signupView').style.display='none';document.getElementById('loginView').style.display='block';}
+function showError(id,msg){var el=document.getElementById(id);el.textContent=msg;el.style.display='block';}
+function hideError(id){document.getElementById(id).style.display='none';}
+
+async function doLogin(){
+  hideError('loginError');
+  var email=document.getElementById('loginEmail').value.trim();
+  var password=document.getElementById('loginPassword').value;
+  if(!email||!password){showError('loginError','Please fill in all fields');return;}
+  var r=await fetch('/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password})});
+  var d=await r.json();
+  if(d.error){showError('loginError',d.error);return;}
+  session=d;localStorage.setItem('eilySession',JSON.stringify(d));showDash();
+}
+
+async function doSignup(){
+  hideError('signupError');
+  var name=document.getElementById('signupName').value.trim();
+  var practice=document.getElementById('signupPractice').value.trim();
+  var email=document.getElementById('signupEmail').value.trim();
+  var password=document.getElementById('signupPassword').value;
+  if(!name||!practice||!email||!password){showError('signupError','Please fill in all fields');return;}
+  if(password.length<8){showError('signupError','Password must be at least 8 characters');return;}
+  var r=await fetch('/api/auth/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,practice,email,password})});
+  var d=await r.json();
+  if(d.error){showError('signupError',d.error);return;}
+  session=d;localStorage.setItem('eilySession',JSON.stringify(d));showDash();
+}
+
+var clients=[];
+
+function showDash(){
+  if(!session)return;
+  document.getElementById('authWrap').style.display='none';
+  document.getElementById('dashView').style.display='block';
+  document.getElementById('sidebarName').textContent=session.name;
+  document.getElementById('sidebarPractice').textContent=session.practice;
+  loadClients();
+}
+
+function bizDaysLeft(lastAppt,days){
+  if(!lastAppt)return null;
+  var d=new Date(lastAppt);var count=0;
+  while(count<days){d.setDate(d.getDate()+1);if(d.getDay()!==0&&d.getDay()!==6)count++;}
+  var now=new Date();now.setHours(0,0,0,0);
+  return Math.round((d-now)/(1000*60*60*24));
+}
+
+function getStatus(client){
+  if(client.status&&client.status!=='auto'&&client.status!=='rebook')return client.status;
+  if(!client.last_appt)return'active';
+  var left=bizDaysLeft(client.last_appt,10);
+  if(left<0)return'discharge';if(left<=3)return'checkin';return'active';
+}
+
+function getInitials(name){
+  if(!name)return'?';
+  return name.split(' ').map(function(n){return n[0]||'';}).join('').slice(0,2).toUpperCase()||'?';
+}
+
+async function updateClientStatus(clientId,newStatus){
+  await fetch('/api/clients/'+clientId,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({status:newStatus})});
+  var c=clients.find(function(x){return x.id===clientId;});
+  if(c)c.status=newStatus;
+  showClientDetail(clientId);loadClients();
+}
+
+async function showClientDetail(clientId){
+  var client=clients.find(function(c){return c.id===clientId;});
+  if(!client)return;
+  var st=getStatus(client);
+  var left=client.last_appt?bizDaysLeft(client.last_appt,10):null;
+  var sc=STATUS_COLORS[st]||STATUS_COLORS.active;
+  var initials=getInitials(client.name);
+  var cid=client.id;
+  var html='<div class="section-pad" style="padding:20px;">';
+  html+='<button onclick="showSection(\'clients\')" style="display:flex;align-items:center;gap:6px;padding:8px 12px;background:none;border:1px solid #e2e8f0;border-radius:8px;font-size:13px;color:#64748b;cursor:pointer;font-family:inherit;margin-bottom:20px;">← Back</button>';
+  html+='<div style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:20px;margin-bottom:16px;">';
+  html+='<div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap;">';
+  html+='<div style="width:52px;height:52px;border-radius:50%;background:#ccfbf1;color:#0f766e;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:500;flex-shrink:0;">'+initials+'</div>';
+  html+='<div style="flex:1;min-width:200px;">';
+  html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">';
+  html+='<h1 style="font-size:18px;font-weight:700;color:#0f172a;">'+(client.name||'Unknown')+'</h1>';
+  html+='<span style="font-size:12px;font-weight:600;padding:3px 9px;border-radius:5px;background:'+sc.bg+';color:'+sc.color+';">'+STATUS_LABELS[st]+'</span>';
+  html+='</div>';
+  html+='<div style="margin-bottom:10px;"><label style="font-size:12px;color:#64748b;display:block;margin-bottom:4px;">Change status</label>';
+  html+='<select onchange="updateClientStatus(\''+cid+'\',this.value)" style="padding:7px 10px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;font-family:inherit;cursor:pointer;color:#0f172a;background:white;">';
+  ['active','urgent','checkin','discharge'].forEach(function(s){html+='<option value="'+s+'"'+(st===s?' selected':'')+'>'+STATUS_LABELS[s]+'</option>';});
+  html+='</select></div>';
+  if(client.phone)html+='<div style="font-size:14px;color:#64748b;margin-bottom:4px;">📞 '+client.phone+'</div>';
+  if(client.email)html+='<div style="font-size:14px;color:#64748b;margin-bottom:4px;">✉️ '+client.email+'</div>';
+  if(client.last_appt)html+='<div style="font-size:13px;color:#64748b;">Last appt: '+new Date(client.last_appt).toLocaleDateString('en-AU')+(left!==null?' · '+(left>0?left+' days left':Math.abs(left)+' days overdue'):'')+'</div>';
+  html+='</div></div>';
+  html+='<div style="margin-top:14px;"><button onclick="showMessageThread(\''+cid+'\')" style="display:flex;align-items:center;gap:6px;padding:9px 16px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;">💬 Message '+(client.name?client.name.split(' ')[0]:'client')+'</button></div>';
+  html+='</div>';
+  html+='<div style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:20px;">';
+  html+='<h2 style="font-size:15px;font-weight:600;color:#0f172a;margin-bottom:14px;">Tasks</h2>';
+  html+='<div id="taskList_'+cid+'"><div style="color:#94a3b8;font-size:14px;">Loading...</div></div>';
+  html+='<div style="margin-top:14px;display:flex;gap:8px;">';
+  html+='<input id="newTaskInput_'+cid+'" type="text" placeholder="Add a task..." style="flex:1;padding:9px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;font-family:inherit;" />';
+  html+='<button onclick="doAddTask(\''+cid+'\')" style="padding:9px 14px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit;">Add</button>';
+  html+='</div></div></div>';
+  var detailDiv=document.getElementById('clientDetail');
+  if(!detailDiv){detailDiv=document.createElement('div');detailDiv.id='clientDetail';document.getElementById('sectionClients').appendChild(detailDiv);}
+  detailDiv.innerHTML=html;
+  document.getElementById('clientListWrap').style.display='none';
+  detailDiv.style.display='block';
+  document.getElementById('newTaskInput_'+cid).addEventListener('keydown',function(e){if(e.key==='Enter')doAddTask(cid);});
+  loadTasks(cid);
+}
+
+async function loadTasks(clientId){
+  var r=await fetch('/api/tasks?clientId='+clientId);
+  var d=await r.json();
+  renderTasks(clientId,d.tasks||[]);
+}
+
+function renderTasks(clientId,tasks){
+  var el=document.getElementById('taskList_'+clientId);
+  if(!el)return;
+  if(!tasks.length){el.innerHTML='<div style="color:#94a3b8;font-size:14px;">No tasks yet</div>';return;}
+  var html='';
+  tasks.forEach(function(t){
+    html+='<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f8fafc;">';
+    html+='<input type="checkbox" '+(t.done?'checked':'')+' data-cid="'+clientId+'" data-tid="'+t.id+'" class="task-check" style="width:16px;height:16px;cursor:pointer;" />';
+    html+='<span style="flex:1;font-size:14px;'+(t.done?'text-decoration:line-through;color:#94a3b8;':'color:#0f172a;')+'">'+t.note+'</span>';
+    html+='<button data-cid="'+clientId+'" data-tid="'+t.id+'" class="task-del" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:20px;padding:0 4px;">×</button>';
+    html+='</div>';
+  });
+  el.innerHTML=html;
+  el.querySelectorAll('.task-check').forEach(function(cb){cb.addEventListener('change',function(){doToggleTask(this.dataset.cid,this.dataset.tid,this.checked);});});
+  el.querySelectorAll('.task-del').forEach(function(btn){btn.addEventListener('click',function(){doDeleteTask(this.dataset.cid,this.dataset.tid);});});
+}
+
+async function doAddTask(clientId){
+  var input=document.getElementById('newTaskInput_'+clientId);
+  if(!input)return;
+  var note=input.value.trim();if(!note)return;input.value='';
+  var r=await fetch('/api/tasks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({clientId:clientId,note:note,practitionerId:session.id})});
+  var d=await r.json();if(d.ok)loadTasks(clientId);
+}
+
+async function doToggleTask(clientId,taskId,done){
+  await fetch('/api/tasks/'+taskId,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({done})});
+  loadTasks(clientId);
+}
+
+async function doDeleteTask(clientId,taskId){
+  await fetch('/api/tasks/'+taskId,{method:'DELETE'});
+  loadTasks(clientId);
+}
+
+async function showMessageThread(clientId){
+  showSection('messages');
+  var r=await fetch('/api/chat-link/'+clientId);
+  var d=await r.json();
+  loadThread(clientId,d.url);loadConversations();
+}
+
+async function loadConversations(){
+  fetch('/api/chat/conversations/'+session.id).then(function(r){return r.json();}).then(function(d){
+    var convs=d.conversations||[];
+    var el=document.getElementById('conversationList');
+    if(!convs.length){el.innerHTML='<div style="padding:40px 16px;text-align:center;color:#94a3b8;font-size:14px;">No conversations yet.<br>Send a client their chat link to get started.</div>';return;}
+    var html='';
+    convs.forEach(function(c){
+      var initials=getInitials(c.client_name);
+      html+='<div class="conv-row" data-cid="'+c.client_id+'" style="padding:14px 16px;cursor:pointer;border-bottom:1px solid #f0fdfa;display:flex;align-items:center;gap:10px;">';
+      html+='<div style="width:40px;height:40px;border-radius:50%;background:#ccfbf1;color:#0f766e;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0;">'+initials+'</div>';
+      html+='<div style="flex:1;min-width:0;"><div style="font-weight:'+(c.unread>0?'600':'400')+';font-size:14px;color:#0f172a;">'+(c.client_name||'Unknown')+'</div>';
+      html+='<div style="font-size:12px;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(c.last_message||'No messages yet')+'</div></div>';
+      if(c.unread>0)html+='<div style="width:18px;height:18px;background:#0d9488;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:white;font-weight:700;">'+c.unread+'</div>';
+      html+='</div>';
+    });
+    el.innerHTML=html;
+    el.querySelectorAll('.conv-row').forEach(function(row){
+      row.addEventListener('mouseover',function(){this.style.background='#f8fafc';});
+      row.addEventListener('mouseout',function(){this.style.background='';});
+      row.addEventListener('click',function(){loadThread(this.dataset.cid,null);});
+    });
+  });
+}
+
+var currentClientId=null;var currentChatUrl=null;
+
+async function loadThread(clientId,chatUrl){
+  currentClientId=clientId;currentChatUrl=chatUrl;
+  var client=clients.find(function(c){return c.id===clientId;});
+  var name=client?(client.name||'Client'):'Client';
+  var initials=getInitials(name);
+  if(!chatUrl){var r=await fetch('/api/chat-link/'+clientId);var d=await r.json();currentChatUrl=d.url;}
+  var msgs=await fetch('/api/chat/thread/'+clientId).then(function(r){return r.json();});
+  var messages=msgs.messages||[];
+  var html='<div style="background:white;padding:14px 20px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;">';
+  html+='<div style="display:flex;align-items:center;gap:10px;"><div style="width:36px;height:36px;border-radius:50%;background:#ccfbf1;color:#0f766e;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;">'+initials+'</div>';
+  html+='<div style="font-weight:500;font-size:15px;color:#0f172a;">'+name+'</div></div>';
+  html+='<button onclick="copyChatLink()" style="padding:6px 10px;background:#f0fdfa;color:#0d9488;border:1px solid #ccfbf1;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit;">📋 Chat link</button></div>';
+  html+='<div id="threadMessages" style="flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:6px;background:#f8fafc;">';
+  if(!messages.length){html+='<div style="text-align:center;color:#94a3b8;font-size:14px;margin-top:40px;">No messages yet. Share the chat link with '+name+' to get started.</div>';}
+  else{messages.forEach(function(m){
+    var time=new Date(m.created_at).toLocaleString('en-AU',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'});
+    html+='<div style="text-align:center;font-size:11px;color:#94a3b8;margin:2px 0;">'+time+'</div>';
+    if(m.from_type==='client'){html+='<div style="display:flex;justify-content:flex-start;"><div style="background:white;color:#0f172a;border:1px solid #ccfbf1;border-radius:18px 18px 18px 4px;padding:10px 14px;font-size:14px;max-width:80%;">'+m.body+'</div></div>';}
+    else{html+='<div style="display:flex;justify-content:flex-end;"><div style="background:#0d9488;color:white;border-radius:18px 18px 4px 18px;padding:10px 14px;font-size:14px;max-width:80%;">'+m.body+'</div></div>';}
+  });}
+  html+='</div><div style="background:white;padding:10px 14px;border-top:1px solid #e2e8f0;display:flex;gap:8px;flex-shrink:0;">';
+  html+='<input id="replyInput" type="text" placeholder="Message '+name+'..." style="flex:1;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:10px;font-size:14px;font-family:inherit;" onkeydown="if(event.key===\'Enter\')sendReply()" />';
+  html+='<button onclick="sendReply()" style="padding:10px 14px;background:#0d9488;color:white;border:none;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit;">Send</button></div>';
+  var ta=document.getElementById('threadArea');
+  ta.innerHTML=html;ta.style.display='flex';ta.style.flexDirection='column';
+  var threadMsgs=document.getElementById('threadMessages');
+  if(threadMsgs)threadMsgs.scrollTop=threadMsgs.scrollHeight;
+}
+
+function copyChatLink(){
+  if(currentChatUrl){navigator.clipboard.writeText(currentChatUrl).then(function(){alert('Chat link copied! Share with your client: '+currentChatUrl);});}
+}
+
+async function sendReply(){
+  var input=document.getElementById('replyInput');
+  var body=input.value.trim();if(!body||!currentClientId)return;input.value='';
+  await fetch('/api/chat/reply',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({clientId:currentClientId,body:body})});
+  loadThread(currentClientId,currentChatUrl);
+}
+
+function showSection(s){
+  ['clients','messages','settings'].forEach(function(sec){
+    var el=document.getElementById('section'+sec.charAt(0).toUpperCase()+sec.slice(1));
+    if(el)el.style.display=sec===s?'block':'none';
+    var btn=document.getElementById('nav'+sec.charAt(0).toUpperCase()+sec.slice(1));
+    if(btn)btn.className='nav-btn'+(sec===s?' active':'');
+    var mbtn=document.getElementById('mnav'+sec.charAt(0).toUpperCase()+sec.slice(1));
+    if(mbtn)mbtn.className='mobile-nav-btn'+(sec===s?' active':'');
+  });
+  if(s==='clients'){
+    var detail=document.getElementById('clientDetail');
+    var listWrap=document.getElementById('clientListWrap');
+    if(detail)detail.style.display='none';
+    if(listWrap)listWrap.style.display='block';
+    loadClients();
+  }
+  if(s==='messages')loadConversations();
+  if(s==='settings'&&session){
+    document.getElementById('settingName').value=session.name||'';
+    document.getElementById('settingPractice').value=session.practice||'';
+  }
+}
+
+function showAddClient(){
+  document.getElementById('addClientModal').style.display='flex';
+  document.getElementById('newClientName').value='';
+  document.getElementById('newClientPhone').value='';
+  document.getElementById('newClientEmail').value='';
+  document.getElementById('newClientDate').value='';
+  document.getElementById('addClientError').style.display='none';
+}
+
+function hideAddClient(){document.getElementById('addClientModal').style.display='none';}
+
+async function doAddClient(){
+  var name=document.getElementById('newClientName').value.trim();
+  var phone=document.getElementById('newClientPhone').value.trim();
+  var email=document.getElementById('newClientEmail').value.trim();
+  var lastAppt=document.getElementById('newClientDate').value;
+  if(!name){var el=document.getElementById('addClientError');el.textContent='Please enter a client name';el.style.display='block';return;}
+  var r=await fetch('/api/clients',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({practitionerId:session.id,name,phone,email,lastAppt})});
+  var d=await r.json();
+  if(d.error){var el=document.getElementById('addClientError');el.textContent=d.error;el.style.display='block';return;}
+  hideAddClient();loadClients();
+}
+
+async function loadClients(){
+  var r=await fetch('/api/clients?practitionerId='+session.id);
+  var d=await r.json();
+  clients=(d.clients||[]).filter(function(c){return c.name;});
+  var taskPromises=clients.map(function(c){
+    return fetch('/api/tasks?clientId='+c.id).then(function(r){return r.json();}).then(function(d){c.tasks=d.tasks||[];}).catch(function(){c.tasks=[];});
+  });
+  await Promise.all(taskPromises);renderClients();
+}
+
+function renderClients(){
+  if(!document.getElementById('clientList'))return;
+  var active=0,urgent=0,checkin=0,discharge=0;var html='';
+  if(!clients.length){
+    html='<div style="padding:40px;text-align:center;color:#94a3b8;"><p style="margin-bottom:12px;font-size:15px;">No clients yet</p><button onclick="showAddClient()" style="padding:9px 18px;background:#0d9488;color:white;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit;">Add your first client</button></div>';
+  } else {
+    clients.forEach(function(c){
+      var st=getStatus(c);
+      if(st==='active')active++;else if(st==='urgent')urgent++;else if(st==='checkin')checkin++;else if(st==='discharge')discharge++;
+      var sc=STATUS_COLORS[st]||STATUS_COLORS.active;
+      html+='<div class="client-card" style="display:flex;align-items:center;padding:14px 16px;border-bottom:1px solid #f8fafc;gap:12px;cursor:pointer;" onclick="showClientDetail(\''+c.id+'\')" onmouseover="this.style.background=\'#f8fafc\'" onmouseout="this.style.background=\'\'">';
+      html+='<div style="width:40px;height:40px;border-radius:50%;background:#ccfbf1;color:#0f766e;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;flex-shrink:0;">'+getInitials(c.name)+'</div>';
+      html+='<div style="flex:1;min-width:0;">';
+      html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:2px;">';
+      html+='<div style="font-weight:500;font-size:14px;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">'+(c.name||'Unknown')+'</div>';
+      html+='<span style="font-size:11px;font-weight:600;padding:2px 7px;border-radius:5px;background:'+sc.bg+';color:'+sc.color+';white-space:nowrap;flex-shrink:0;">'+STATUS_LABELS[st]+'</span>';
+      html+='</div>';
+      html+='<div style="font-size:12px;color:#64748b;">'+(c.last_appt?'Last appt: '+new Date(c.last_appt).toLocaleDateString('en-AU'):'No appointment recorded')+'</div>';
+      var pending=(c.tasks||[]).filter(function(t){return !t.done;});
+      if(pending.length>0){
+        html+='<div style="margin-top:4px;display:flex;flex-wrap:wrap;gap:4px;">';
+        pending.slice(0,2).forEach(function(t){html+='<span style="font-size:11px;background:#f0fdfa;color:#0d9488;padding:2px 7px;border-radius:4px;border:1px solid #ccfbf1;white-space:nowrap;">'+t.note+'</span>';});
+        if(pending.length>2)html+='<span style="font-size:11px;color:#94a3b8;">+'+(pending.length-2)+' more</span>';
+        html+='</div>';
+      }
+      html+='</div></div>';
+    });
+  }
+  document.getElementById('clientList').innerHTML=html;
+  document.getElementById('statActive').textContent=active;
+  document.getElementById('statUrgent').textContent=urgent;
+  document.getElementById('statCheckin').textContent=checkin;
+  document.getElementById('statDischarge').textContent=discharge;
+  document.getElementById('statTotal').textContent=clients.length;
+  document.getElementById('clientCount').textContent=clients.length+' client'+(clients.length!==1?'s':'');
+}
+
+async function doSaveSettings(){
+  var name=document.getElementById('settingName').value.trim();
+  var practice=document.getElementById('settingPractice').value.trim();
+  if(!name||!practice){alert('Please fill in all fields');return;}
+  var r=await fetch('/api/practitioners/'+session.id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,practice})});
+  var d=await r.json();
+  if(d.ok){
+    session.name=name;session.practice=practice;
+    localStorage.setItem('eilySession',JSON.stringify(session));
+    document.getElementById('sidebarName').textContent=name;
+    document.getElementById('sidebarPractice').textContent=practice;
+    alert('Settings saved!');
+  } else {alert('Error saving settings');}
+}
+
+function doLogout(){
+  session=null;clients=[];localStorage.removeItem('eilySession');
+  document.getElementById('dashView').style.display='none';
+  document.getElementById('authWrap').style.display='flex';
+  document.getElementById('loginView').style.display='block';
+  document.getElementById('signupView').style.display='none';
+}
+
+document.addEventListener('DOMContentLoaded',function(){if(session)showDash();});
+</script>
 </body>
-
 </html>

@@ -124,7 +124,7 @@ input:focus{border-color:#0d9488;}
             <span>Add client</span>
           </button>
         </div>
-        <div class="stats-grid" style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;">
+        <div class="stats-grid" style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px;">
           <div class="stat-card" style="background:white;border-radius:12px;border:1px solid #e2e8f0;padding:16px;">
             <div class="stat-label" style="font-size:12px;color:#64748b;margin-bottom:4px;">Active</div>
             <div class="stat-num" style="font-size:24px;font-weight:700;color:#0d9488;" id="statActive">0</div>
@@ -568,7 +568,7 @@ function renderClients(){
   document.getElementById('statUrgent').textContent=urgent;
   document.getElementById('statCheckin').textContent=checkin;
   document.getElementById('statDischarge').textContent=discharge;
-  document.getElementById('statTotal').textContent=clients.length;
+  document.getElementById('statTotal').textContent=clients.length; fetch('/api/chat/unread/'+(session.id)).then(function(r){return r.json();}).then(function(d){var el=document.getElementById('statUnread');if(el)el.textContent=d.unread||0;});
   document.getElementById('clientCount').textContent=clients.length+' client'+(clients.length!==1?'s':'');
 }
 

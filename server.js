@@ -267,6 +267,14 @@ app.post('/api/chat/reply',async function(req,res){
   }catch(err){res.status(500).json({error:err.message});}
 });
 
+// Get total unread count for practitioner
+app.get("/api/chat/unread/:practitionerId",async function(req,res){
+  try{
+    var r=await pool.query(`SELECT COALESCE(SUM((SELECT COUNT(*) FROM messages m2 WHERE m2.client_id=ct.client_id AND m2.from_type='client' AND (ct.last_read IS NULL OR m2.created_at>ct.last_read))),0) as total FROM chat_tokens ct JOIN clients c ON c.id=ct.client_id WHERE c.practitioner_id=$1`,[req.params.practitionerId]);
+    res.json({unread:parseInt(r.rows[0].total)});
+  }catch(err){res.status(500).json({error:err.message});}
+});
+
 // Get all conversations for practitioner
 app.get('/api/chat/conversations/:practitionerId',async function(req,res){
   try{

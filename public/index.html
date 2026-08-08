@@ -558,7 +558,7 @@ function renderClients(){
   document.getElementById('clientCount').textContent=clients.length+' client'+(clients.length!==1?'s':'');
 }
 
-function checkExistingSession(){ try{ var s=localStorage.getItem("eilySession"); if(s){ session=JSON.parse(s); showDash(); } }catch(e){} } checkExistingSession(); function doLogout(){
+function checkExistingSession(){ try{ var s=localStorage.getItem("eilySession"); if(s){ session=JSON.parse(s); showDash(); } }catch(e){} } document.addEventListener("DOMContentLoaded", checkExistingSession); function doLogout(){
   session=null;clients=[];localStorage.removeItem("eilySession");
   document.getElementById('dashView').style.display='none';
   document.getElementById('authWrap').style.display='flex';

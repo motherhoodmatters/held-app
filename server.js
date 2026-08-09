@@ -61,7 +61,7 @@ async function initDB(){
   await pool.query(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS note TEXT`).catch(()=>{});
   await pool.query(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS done BOOLEAN DEFAULT FALSE`).catch(()=>{});
   await pool.query(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW()`).catch(()=>{});
-  await pool.query('ALTER TABLE practitioners ADD COLUMN IF NOT EXISTS subscription_status TEXT DEFAULT 'trial'').catch(()=>{});
+  await pool.query(`ALTER TABLE practitioners ADD COLUMN IF NOT EXISTS subscription_status TEXT DEFAULT 'trial'`).catch(()=>{});
   await pool.query('ALTER TABLE practitioners ADD COLUMN IF NOT EXISTS stripe_customer_id TEXT').catch(()=>{});
   console.log('DB ready');
 }

@@ -213,7 +213,7 @@ app.get('/api/chat-link/:clientId',async function(req,res){
       token=makeToken();
       await pool.query('INSERT INTO chat_tokens(client_id,token) VALUES($1,$2)',[clientId,token]);
     }
-    const base=process.env.APP_URL||'https://held-app.onrender.com';
+    const base=process.env.APP_URL||'https://eily.onrender.com';
     res.json({url:base+'/chat/'+token,token:token});
   }catch(err){console.error('Chat link error:',err.message);res.status(500).json({error:err.message});}
 });

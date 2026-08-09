@@ -2,6 +2,7 @@ const express=require('express');
 const path=require('path');
 const crypto=require('crypto');
 const {Pool}=require('pg');
+const stripe=require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const app=express();
 app.use(express.json());
@@ -60,12 +61,57 @@ async function initDB(){
   await pool.query(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS note TEXT`).catch(()=>{});
   await pool.query(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS done BOOLEAN DEFAULT FALSE`).catch(()=>{});
   await pool.query(`ALTER TABLE tasks ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW()`).catch(()=>{});
+  await pool.query('ALTER TABLE practitioners ADD COLUMN IF NOT EXISTS subscription_status TEXT DEFAULT 'trial'').catch(()=>{});
+  await pool.query('ALTER TABLE practitioners ADD COLUMN IF NOT EXISTS stripe_customer_id TEXT').catch(()=>{});
   console.log('DB ready');
 }
 
 function hashPassword(pw){return crypto.createHash('sha256').update(pw+'held2026').digest('hex');}
 function hashPin(pin){return crypto.createHash('sha256').update(pin+'heldpin2026').digest('hex');}
 function makeToken(){return crypto.randomBytes(32).toString('hex');}
+
+
+// Create Stripe checkout session
+app.post('/api/subscribe',async function(req,res){
+  var{practitionerId,plan}=req.body;
+  var price=plan==='founding'?1900:2900;
+  try{
+    var session=await stripe.checkout.sessions.create({
+      payment_method_types:['card'],
+      mode:'subscription',
+      line_items:[{
+        price_data:{
+          currency:'aud',
+          product_data:{name:plan==='founding'?'Eily Founding Member':'Eily Standard'},
+          unit_amount:price,
+          recurring:{interval:'month'}
+        },
+        quantity:1
+      }],
+      success_url:(process.env.APP_URL||'https://eily.com.au')+'/success?session_id={CHECKOUT_SESSION_ID}',
+      cancel_url:(process.env.APP_URL||'https://eily.com.au'),
+      metadata:{practitionerId:practitionerId}
+    });
+    res.json({url:session.url});
+  }catch(err){console.error(err);res.status(500).json({error:err.message});}
+});
+
+// Stripe webhook
+app.post('/api/webhook',express.raw({type:'application/json'}),async function(req,res){
+  var sig=req.headers['stripe-signature'];
+  var event;
+  try{
+    event=stripe.webhooks.constructEvent(req.body,sig,process.env.STRIPE_WEBHOOK_SECRET||'');
+  }catch(err){return res.status(400).send('Webhook error: '+err.message);}
+  if(event.type==='checkout.session.completed'){
+    var s=event.data.object;
+    var pid=s.metadata.practitionerId;
+    if(pid){
+      await pool.query('UPDATE practitioners SET subscription_status=$1,stripe_customer_id=$2 WHERE id=$3',['active',s.customer,pid]);
+    }
+  }
+  res.json({received:true});
+});
 
 // Update practitioner settings
 app.put('/api/practitioners/:id',async function(req,res){

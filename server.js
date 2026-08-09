@@ -67,6 +67,15 @@ function hashPassword(pw){return crypto.createHash('sha256').update(pw+'held2026
 function hashPin(pin){return crypto.createHash('sha256').update(pin+'heldpin2026').digest('hex');}
 function makeToken(){return crypto.randomBytes(32).toString('hex');}
 
+// Update practitioner settings
+app.put('/api/practitioners/:id',async function(req,res){
+  var{name,practice}=req.body;
+  try{
+    await pool.query('UPDATE practitioners SET name=$1,practice_name=$2 WHERE id=$3',[name,practice,req.params.id]);
+    res.json({ok:true});
+  }catch(err){res.status(500).json({error:err.message});}
+});
+
 // Health check
 app.get('/chat/:token',function(req,res){
   res.sendFile(require('path').join(__dirname,'public','chat.html'));

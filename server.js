@@ -113,15 +113,6 @@ app.post('/api/webhook',express.raw({type:'application/json'}),async function(re
   res.json({received:true});
 });
 
-
-// Temp admin - activate account
-app.get('/api/admin/activate/:email',async function(req,res){
-  try{
-    await pool.query('UPDATE practitioners SET subscription_status=$1 WHERE email=$2',['active',req.params.email]);
-    res.json({ok:true});
-  }catch(err){res.status(500).json({error:err.message});}
-});
-
 // Update practitioner settings
 app.put('/api/practitioners/:id',async function(req,res){
   var{name,practice}=req.body;

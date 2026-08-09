@@ -312,5 +312,5 @@ app.get('/api/chat/thread/:clientId',async function(req,res){
 
 app.listen(process.env.PORT||3000,async function(){
   await initDB();
-  console.log('Held running on port '+(process.env.PORT||3000));
+  console.log('Eily running on port '+(process.env.PORT||3000));
 });

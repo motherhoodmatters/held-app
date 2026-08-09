@@ -86,6 +86,41 @@ input:focus{border-color:#0d9488;}
     </div>
   </div>
 </div>
+
+<div id="pricingView" style="display:none;position:fixed;inset:0;z-index:50;background:#f0fdfa;display:none;align-items:center;justify-content:center;padding:20px;">
+  <div style="max-width:600px;width:100%;">
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="font-family:'Playfair Display',serif;font-size:28px;font-weight:600;color:#0d9488;margin-bottom:8px;">Welcome to Eily</div>
+      <p style="font-size:16px;color:#64748b;">Choose your plan to get started</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div style="background:white;border-radius:16px;border:2px solid #0d9488;padding:28px;position:relative;">
+        <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#0d9488;color:white;font-size:12px;font-weight:600;padding:3px 12px;border-radius:20px;">FOUNDING MEMBER</div>
+        <div style="font-size:32px;font-weight:700;color:#0f172a;margin-bottom:4px;margin-top:8px;">9<span style="font-size:14px;font-weight:400;color:#64748b;">/month</span></div>
+        <div style="font-size:13px;color:#0d9488;font-weight:500;margin-bottom:16px;">Locked in forever</div>
+        <ul style="list-style:none;margin-bottom:24px;">
+          <li style="font-size:14px;color:#374151;padding:4px 0;">✓ Unlimited clients</li>
+          <li style="font-size:14px;color:#374151;padding:4px 0;">✓ Client messaging</li>
+          <li style="font-size:14px;color:#374151;padding:4px 0;">✓ Follow-up tracking</li>
+          <li style="font-size:14px;color:#374151;padding:4px 0;">✓ Price never increases</li>
+        </ul>
+        <button onclick="doSubscribe('founding')" style="width:100%;padding:12px;background:#0d9488;color:white;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;">Get started</button>
+      </div>
+      <div style="background:white;border-radius:16px;border:1.5px solid #e2e8f0;padding:28px;">
+        <div style="font-size:32px;font-weight:700;color:#0f172a;margin-bottom:4px;margin-top:8px;">9<span style="font-size:14px;font-weight:400;color:#64748b;">/month</span></div>
+        <div style="font-size:13px;color:#64748b;font-weight:500;margin-bottom:16px;">Standard plan</div>
+        <ul style="list-style:none;margin-bottom:24px;">
+          <li style="font-size:14px;color:#374151;padding:4px 0;">✓ Unlimited clients</li>
+          <li style="font-size:14px;color:#374151;padding:4px 0;">✓ Client messaging</li>
+          <li style="font-size:14px;color:#374151;padding:4px 0;">✓ Follow-up tracking</li>
+          <li style="font-size:14px;color:#374151;padding:4px 0;">✓ Full feature access</li>
+        </ul>
+        <button onclick="doSubscribe('standard')" style="width:100%;padding:12px;background:white;color:#0d9488;border:2px solid #0d9488;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;">Get started</button>
+      </div>
+    </div>
+    <p style="text-align:center;font-size:13px;color:#94a3b8;margin-top:20px;">Cancel anytime. No lock-in contracts.</p>
+  </div>
+</div>
 <div id="dashView" style="display:none;min-height:100vh;">
   <div style="display:flex;height:100vh;">
     <div class="sidebar">
@@ -260,6 +295,19 @@ function showLogin(){document.getElementById('signupView').style.display='none';
 function showError(id,msg){var el=document.getElementById(id);el.textContent=msg;el.style.display='block';}
 function hideError(id){document.getElementById(id).style.display='none';}
 
+
+async function doSubscribe(plan){
+  var r=await fetch('/api/subscribe',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({practitionerId:session.id,plan:plan})});
+  var d=await r.json();
+  if(d.url){window.location.href=d.url;}
+  else{alert('Error starting subscription. Please try again.');}
+}
+
+function showPricing(){
+  document.getElementById('authWrap').style.display='none';
+  document.getElementById('pricingView').style.display='flex';
+}
+
 async function doLogin(){
   hideError('loginError');
   var email=document.getElementById('loginEmail').value.trim();
@@ -289,6 +337,7 @@ var clients=[];
 
 function showDash(){
   if(!session)return;
+  if(session.subscription_status==="trial"){showPricing();return;}
   document.getElementById('authWrap').style.display='none';
   document.getElementById('dashView').style.display='block';
   document.getElementById('sidebarName').textContent=session.name;
